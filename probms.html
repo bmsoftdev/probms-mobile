@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProBMS – فائدة اليوم</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding-top: 80px;
+      margin: 0;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 16px;
+      width: 85%;
+      max-width: 360px;
+      margin: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    .value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #22c55e;
+      margin: 20px 0;
+    }
+
+    .update {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 22px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>💰 فائدة اليوم</h2>
+
+    <div id="benefice" class="value">---</div>
+    <div id="update" class="update"></div>
+
+    <button onclick="loadData()">🔄 تحديث</button>
+  </div>
+
+  <script>
+    // 🔗 رابط Google Apps Script (بدّله بالرابط الحقيقي)
+   
+   
+const url = "https://corsproxy.io/?" +
+            encodeURIComponent("https://drive.google.com/uc?export=download&id=11xq4WiNRDScnGjojZInOu-bU3jdtbmzH");
+
+
+
+    function loadData() {
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("HTTP Error " + response.status);
+          }
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById("benefice").innerText =
+            Number(data.beneficeJour).toLocaleString() + " دج";
+
+          document.getElementById("update").innerText =
+            "آخر تحديث: " + data.lastUpdate;
+        })
+        .catch(error => {
+          document.getElementById("benefice").innerText = "خطأ";
+          document.getElementById("update").innerText = error.message;
+          console.error(error);
+        });
+    }
+
+    // تحميل البيانات عند فتح الصفحة
+    loadData();
+
+    // تحديث تلقائي كل دقيقة
+    setInterval(loadData, 60000);
+
+    // تسجيل Service Worker (PWA)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
