@@ -65,6 +65,24 @@ body{
   cursor:pointer;
 }
 
+/* 🔍 البحث */
+.search-box{
+  margin-top:18px;
+  display:flex;
+  gap:10px;
+}
+
+.search-box input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background:rgba(14,10,31,.7);
+  color:var(--text);
+  font-family:'Cairo';
+  font-size:14px;
+}
+
 .stats{
   margin-top:20px;
   display:grid;
@@ -133,13 +151,14 @@ th{
   background:rgba(14,10,31,.6);
 }
 
-.loading,.error{
+.loading,.error,.empty{
   text-align:center;
   padding:30px;
   font-size:16px;
 }
 
 .error{color:#f87171}
+.empty{color:#facc15}
 
 footer{
   margin-top:25px;
@@ -159,6 +178,11 @@ footer{
     <button class="back" onclick="location.href='index.html'">⬅ الرجوع</button>
   </div>
 
+  <!-- 🔍 البحث -->
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث باسم الزبون أو رقم الهاتف">
+  </div>
+
   <div class="stats">
     <div class="stat">
       <span>عدد الزبائن المدينين</span>
@@ -172,6 +196,7 @@ footer{
 
   <div id="loading" class="loading">⏳ تحميل الديون...</div>
   <div id="error" class="error" style="display:none"></div>
+  <div id="empty" class="empty" style="display:none">لا توجد نتائج 🔍</div>
 
   <div class="table-card">
     <table id="creditsTable" style="display:none">
@@ -193,51 +218,65 @@ ProBMS © www.bmsoftdev.com — 06.62.54.14.86 / 07.76.07.77.94
 
 <script>
 const CREDIT_URL = "credit.json";
+let allClients = [];
 
 function format00(v){
   return Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2});
 }
 
+function render(list){
+  const tbody = document.querySelector("#creditsTable tbody");
+  tbody.innerHTML="";
+  document.getElementById("empty").style.display = list.length ? "none":"block";
+
+  list.forEach((c,index)=>{
+    const tr=document.createElement("tr");
+
+    if(index < 3){
+      tr.className="top-debt";
+    }else{
+      tr.className="normal-row";
+    }
+
+    tr.innerHTML=`
+      <td style="text-align:right">
+        ${c.client}
+        <div style="font-size:13px;margin-top:4px">
+          💰 ${format00(c.solde)} دج
+        </div>
+      </td>
+      <td>${c.mobile || ""}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
 fetch(CREDIT_URL)
   .then(r=>r.json())
   .then(data=>{
-
     document.getElementById("loading").style.display="none";
-    document.getElementById("nbClients").innerText = data.clients;
-    document.getElementById("totalDebt").innerText = format00(data.totalDebt)+" دج";
+    document.getElementById("nbClients").innerText=data.clients;
+    document.getElementById("totalDebt").innerText=format00(data.totalDebt)+" دج";
 
-    const tbody = document.querySelector("#creditsTable tbody");
-    tbody.innerHTML="";
-
-    data.items.forEach((c,index)=>{
-      const tr=document.createElement("tr");
-
-      if(index < 3){
-        tr.classList.add("top-debt");
-      }else{
-        tr.classList.add("normal-row");
-      }
-
-      tr.innerHTML=`
-        <td style="text-align:right">
-          ${c.client}
-          <div style="font-size:13px; margin-top:4px; opacity:.9">
-            💰 ${format00(c.solde)} دج
-          </div>
-        </td>
-        <td>${c.mobile || ""}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-
+    allClients = data.items;
+    render(allClients);
     document.getElementById("creditsTable").style.display="table";
   })
-  .catch(err=>{
+  .catch(()=>{
     document.getElementById("loading").style.display="none";
     document.getElementById("error").style.display="block";
     document.getElementById("error").innerText="❌ خطأ في تحميل ملف الديون";
-    console.error(err);
   });
+
+/* 🔍 البحث */
+document.getElementById("searchInput").addEventListener("input", e=>{
+  const q = e.target.value.toLowerCase().trim();
+  const filtered = allClients.filter(c =>
+    c.client.toLowerCase().includes(q) ||
+    (c.mobile || "").toLowerCase().includes(q)
+  );
+  render(filtered);
+});
 </script>
 
 </body>
