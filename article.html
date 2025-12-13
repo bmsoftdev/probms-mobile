@@ -264,14 +264,22 @@ fetch(ARTICLE_URL)
     console.error(err);
   });
 
+
+
 document.getElementById("searchInput").addEventListener("input", function(){
-  const q = this.value.toLowerCase();
+  const q = this.value.toLowerCase().trim();
+
   const filtered = allItems.filter(a =>
     a.reference.toLowerCase().includes(q) ||
-    a.designation.toLowerCase().includes(q)
+    a.designation.toLowerCase().includes(q) ||
+    String(a.vente).includes(q)   // 🔍 البحث بسعر البيع
   );
+
   renderTable(filtered);
 });
+
+
+
 </script>
 
 </body>
