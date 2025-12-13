@@ -83,6 +83,7 @@ body{
   border-radius:16px;
   padding:16px;
   box-shadow:var(--shadow);
+  text-align:center;
 }
 
 .stat span{
@@ -179,23 +180,27 @@ footer{
     <button class="back" onclick="location.href='index.html'">⬅ الرجوع</button>
   </div>
 
+  <!-- الإحصائيات -->
   <div class="stats">
     <div class="stat">
-      <span>عدد السلع</span>
+      <span>عدد السلع الكلي</span>
       <strong id="nbArticles">—</strong>
+    </div>
+    <div class="stat">
+      <span>نتائج البحث</span>
+      <strong id="nbResults">0</strong>
     </div>
   </div>
 
+  <!-- البحث -->
   <div class="search">
-  
-   <input type="text" id="searchInput" placeholder="🔍 بحث بالمرجع أو التعيين أو سعر البيع...">
-
-	
+    <input type="text" id="searchInput" placeholder="🔍 بحث بالمرجع أو التعيين أو سعر البيع...">
   </div>
 
   <div id="loading" class="loading">⏳ تحميل السلع...</div>
   <div id="error" class="error" style="display:none"></div>
 
+  <!-- الجدول -->
   <div class="table-card">
     <table id="articleTable" style="display:none">
       <thead>
@@ -249,15 +254,17 @@ function renderTable(items){
   });
 }
 
+// تحميل البيانات
 fetch(ARTICLE_URL)
   .then(r=>r.json())
   .then(data=>{
     document.getElementById("loading").style.display="none";
-    document.getElementById("nbArticles").innerText = data.articles;
 
     allItems = data.items;
-    renderTable(allItems);
+    document.getElementById("nbArticles").innerText = allItems.length;
+    document.getElementById("nbResults").innerText = allItems.length;
 
+    renderTable(allItems);
     document.getElementById("articleTable").style.display="table";
   })
   .catch(err=>{
@@ -267,22 +274,19 @@ fetch(ARTICLE_URL)
     console.error(err);
   });
 
-
-
+// البحث
 document.getElementById("searchInput").addEventListener("input", function(){
   const q = this.value.toLowerCase().trim();
 
   const filtered = allItems.filter(a =>
     a.reference.toLowerCase().includes(q) ||
     a.designation.toLowerCase().includes(q) ||
-    String(a.vente).includes(q)   // 🔍 البحث بسعر البيع
+    String(a.vente).includes(q)
   );
 
   renderTable(filtered);
+  document.getElementById("nbResults").innerText = filtered.length;
 });
-
-
-
 </script>
 
 </body>
