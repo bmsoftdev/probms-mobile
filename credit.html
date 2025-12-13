@@ -17,7 +17,6 @@
   --muted:rgba(241,245,249,.7);
   --mauve:#b55cff;
   --mauve2:#7c3aed;
-  --danger:#ef4444;
   --shadow:0 25px 60px rgba(0,0,0,.5);
 }
 
@@ -48,8 +47,6 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:15px;
-  flex-wrap:wrap;
 }
 
 .header h1{
@@ -121,14 +118,19 @@ th{
   font-weight:800;
 }
 
-tr.debt-row{
+/* 🔴 أعلى 3 ديون */
+.top-debt{
   background:linear-gradient(135deg,#7f1d1d,#b91c1c);
-  color:#fff;
 }
 
-tr.debt-row td{
+.top-debt td{
   color:#fff;
-  font-weight:700;
+  font-weight:800;
+}
+
+/* 🟣 باقي السطور */
+.normal-row{
+  background:rgba(14,10,31,.6);
 }
 
 .loading,.error{
@@ -144,11 +146,6 @@ footer{
   text-align:center;
   font-size:12px;
   opacity:.6;
-}
-
-@media(max-width:768px){
-  table{font-size:12px}
-  th,td{padding:8px}
 }
 </style>
 </head>
@@ -182,7 +179,6 @@ footer{
         <tr>
           <th>الزبون</th>
           <th>الهاتف</th>
-          <th>الدين (دج)</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -207,21 +203,29 @@ fetch(CREDIT_URL)
   .then(data=>{
 
     document.getElementById("loading").style.display="none";
-
     document.getElementById("nbClients").innerText = data.clients;
     document.getElementById("totalDebt").innerText = format00(data.totalDebt)+" دج";
 
     const tbody = document.querySelector("#creditsTable tbody");
     tbody.innerHTML="";
 
-    data.items.forEach(c=>{
+    data.items.forEach((c,index)=>{
       const tr=document.createElement("tr");
-      tr.classList.add("debt-row");
+
+      if(index < 3){
+        tr.classList.add("top-debt");
+      }else{
+        tr.classList.add("normal-row");
+      }
 
       tr.innerHTML=`
-        <td style="text-align:right">${c.client}</td>
-        <td>${c.mobile||""}</td>
-        <td>${format00(c.solde)}</td>
+        <td style="text-align:right">
+          ${c.client}
+          <div style="font-size:13px; margin-top:4px; opacity:.9">
+            💰 ${format00(c.solde)} دج
+          </div>
+        </td>
+        <td>${c.mobile || ""}</td>
       `;
       tbody.appendChild(tr);
     });
