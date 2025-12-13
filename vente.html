@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مبيعات اليوم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- خط Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: #e5e7eb;
+    }
+
+    .card {
+      max-width: 1100px;
+      margin: 30px auto;
+      background: #0b1220;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.6);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .logo img {
+      width: 80px;
+      opacity: 0.95;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 5px 0;
+      font-weight: 800;
+    }
+
+    .benefice {
+      text-align: center;
+      font-size: 36px;
+      margin: 10px 0;
+      font-weight: 800;
+    }
+
+    .benefice-positive {
+      color: #22c55e;
+    }
+
+    .benefice-negative {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #ffffff;
+      padding: 8px 20px;
+      border-radius: 14px;
+      display: inline-block;
+    }
+
+    .meta {
+      text-align: center;
+      font-size: 14px;
+      opacity: .85;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #1f2937;
+      text-align: center;
+    }
+
+    th {
+      background: #020617;
+      position: sticky;
+      top: 0;
+      font-weight: 700;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* 🔴 سطر كامل بخسارة */
+    .loss-row {
+      background: linear-gradient(135deg, #f97316, #ea580c) !important;
+      color: #ffffff !important;
+    }
+
+    .loss-row td {
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+    }
+
+    .error {
+      text-align: center;
+      color: #f87171;
+      padding: 30px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      opacity: .6;
+    }
+
+    @media (max-width: 768px) {
+      .benefice { font-size: 28px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="logo">
+    <img src="logo.png" alt="ProBMS Logo">
+  </div>
+
+  <h1>💰 فائدة اليوم</h1>
+
+  <div id="benefice" class="benefice">--</div>
+
+  <div id="meta" class="meta">جاري التحميل...</div>
+
+  <div id="loading" class="loading">⏳ تحميل البيانات...</div>
+
+  <div id="error" class="error" style="display:none"></div>
+
+  <table id="itemsTable" style="display:none">
+    <thead>
+      <tr>
+        <th>المرجع</th>
+        <th>السلعة</th>
+        <th>الكمية</th>
+        <th>الشراء</th>
+        <th>البيع</th>
+        <th>الفائدة</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</div>
+
+<footer>
+  ProBMS © https://www.bmsoftdev.com/ — 06.62.54.14.86 / 07.76.07.77.94
+</footer>
+
+<script>
+/* 🔴 رابط JSON */
+const API_URL = "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec";
+
+/* تنسيق رقم */
+function format00(value) {
+  return Number(value).toFixed(2);
+}
+
+fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+
+    document.getElementById("loading").style.display = "none";
+
+    /* فائدة اليوم */
+    const benefDiv = document.getElementById("benefice");
+    benefDiv.innerText = format00(data.benefice) + " دج";
+
+    if (data.benefice < 0) {
+      benefDiv.className = "benefice benefice-negative";
+    } else {
+      benefDiv.className = "benefice benefice-positive";
+    }
+
+    /* معلومات */
+    document.getElementById("meta").innerText =
+      "📅 " + data.date +
+      " | 🕒 : " + data.lastUpdate +
+      " | 🧾السلع: " + data.articles;
+
+    /* جدول */
+    const tbody = document.querySelector("#itemsTable tbody");
+    tbody.innerHTML = "";
+
+    data.items.forEach(item => {
+
+      const tr = document.createElement("tr");
+
+      // 🔴 إذا خسارة → لوّن السطر كامل
+      if (item.benefice < 0) {
+        tr.classList.add("loss-row");
+      }
+
+      tr.innerHTML = `
+        <td>${item.reference}</td>
+        <td style="text-align:right">${item.designation}</td>
+        <td>${item.qte}</td>
+        <td>${format00(item.achat)}</td>
+        <td>${format00(item.vente)}</td>
+        <td>${format00(item.benefice)}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("itemsTable").style.display = "table";
+  })
+  .catch(err => {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("error").style.display = "block";
+    document.getElementById("error").innerText = "❌ خطأ في قراءة البيانات";
+    console.error(err);
+  });
+</script>
+
+</body>
+</html>

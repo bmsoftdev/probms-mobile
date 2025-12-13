@@ -1,236 +1,459 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>مبيعات اليوم</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProBMS Dashboard</title>
 
-  <!-- خط Cairo -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    body {
-      margin: 0;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a, #020617);
-      color: #e5e7eb;
+    :root{
+      --bg1:#070517;
+      --bg2:#120a2a;
+      --card:#0e0a1f;
+      --stroke:rgba(255,255,255,.08);
+      --text:#f1f5f9;
+      --muted:rgba(241,245,249,.72);
+      --mauve:#b55cff;
+      --mauve2:#7c3aed;
+      --mauve3:#e879f9;
+      --good:#22c55e;
+      --warn:#f97316;
+      --bad:#ef4444;
+      --cyan:#38bdf8;
+      --shadow: 0 25px 70px rgba(0,0,0,.55);
     }
 
-    .card {
-      max-width: 1100px;
-      margin: 30px auto;
-      background: #0b1220;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,.6);
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Cairo',Tahoma,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(181,92,255,.25), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(232,121,249,.18), transparent 55%),
+        radial-gradient(700px 500px at 50% 90%, rgba(124,58,237,.18), transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
     }
 
-    .logo {
-      text-align: center;
-      margin-bottom: 10px;
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:22px 18px 40px;
     }
 
-    .logo img {
-      width: 80px;
-      opacity: 0.95;
+    /* Top bar */
+    .top{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 16px;
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(181,92,255,.10), rgba(14,10,31,.70));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
     }
 
-    h1 {
-      text-align: center;
-      margin: 5px 0;
-      font-weight: 800;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 220px;
     }
 
-    .benefice {
-      text-align: center;
-      font-size: 36px;
-      margin: 10px 0;
-      font-weight: 800;
+    .logo{
+      width:44px;height:44px;
+      border-radius:14px;
+      display:grid;place-items:center;
+      background:
+        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.35), transparent 60%),
+        linear-gradient(135deg, var(--mauve), var(--mauve2));
+      box-shadow:0 10px 25px rgba(181,92,255,.35);
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:900;
     }
 
-    .benefice-positive {
-      color: #22c55e;
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      line-height:1.1;
+      font-weight:900;
+    }
+    .brand small{
+      display:block;
+      margin-top:2px;
+      color:var(--muted);
+      font-weight:600;
+      font-size:12px;
     }
 
-    .benefice-negative {
-      background: linear-gradient(135deg, #f97316, #ea580c);
-      color: #ffffff;
-      padding: 8px 20px;
-      border-radius: 14px;
-      display: inline-block;
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
-    .meta {
-      text-align: center;
-      font-size: 14px;
-      opacity: .85;
-      margin-bottom: 20px;
+    .pill{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      padding:10px 12px;
+      border-radius:14px;
+      color:var(--muted);
+      font-size:12px;
+      display:flex;
+      gap:8px;
+      align-items:center;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      font-size: 14px;
+    .btn{
+      border:none;
+      cursor:pointer;
+      font-family:'Cairo',Tahoma;
+      font-weight:800;
+      padding:10px 14px;
+      border-radius:14px;
+      color:white;
+      background: linear-gradient(135deg, var(--mauve), var(--mauve2));
+      box-shadow:0 12px 30px rgba(181,92,255,.25);
+      transition:.18s ease;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .btn:hover{ transform: translateY(-2px); }
+    .btn:active{ transform: translateY(0px); }
+
+    .btn.secondary{
+      background: rgba(255,255,255,.05);
+      box-shadow:none;
+      color:var(--text);
     }
 
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #1f2937;
-      text-align: center;
+    /* KPI */
+    .kpis{
+      margin-top:18px;
+      display:grid;
+      gap:14px;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+    }
+    .kpi{
+      border:1px solid var(--stroke);
+      background: rgba(14,10,31,.60);
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 20px 45px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(400px 120px at 20% 20%, rgba(181,92,255,.22), transparent 60%);
+      pointer-events:none;
+    }
+    .kpi .t{ color:var(--muted); font-size:12px; font-weight:700; position:relative;}
+    .kpi .v{ font-size:20px; font-weight:900; margin-top:6px; position:relative;}
+    .kpi .tag{
+      position:absolute;
+      left:12px;
+      top:12px;
+      font-size:11px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
     }
 
-    th {
-      background: #020617;
-      position: sticky;
-      top: 0;
-      font-weight: 700;
+    /* Grid cards */
+    .grid{
+      margin-top:18px;
+      display:grid;
+      gap:14px;
+      grid-template-columns: repeat(3, minmax(0,1fr));
     }
 
-    tr:hover {
-      background: rgba(255,255,255,0.04);
+    .card{
+      border:1px solid var(--stroke);
+      background: linear-gradient(135deg, rgba(181,92,255,.10), rgba(14,10,31,.70));
+      border-radius:22px;
+      padding:18px;
+      box-shadow: 0 25px 60px rgba(0,0,0,.35);
+      cursor:pointer;
+      transition: .18s ease;
+      position:relative;
+      overflow:hidden;
+      min-height: 140px;
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      width:220px;height:220px;
+      border-radius:50%;
+      right:-120px; top:-120px;
+      background: radial-gradient(circle at 30% 30%, rgba(232,121,249,.25), rgba(124,58,237,.15) 45%, transparent 70%);
+      pointer-events:none;
+    }
+    .card:hover{ transform: translateY(-4px); }
+    .card:active{ transform: translateY(-1px); }
+
+    .row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      position:relative;
     }
 
-    /* 🔴 سطر كامل بخسارة */
-    .loss-row {
-      background: linear-gradient(135deg, #f97316, #ea580c) !important;
-      color: #ffffff !important;
+    .ico{
+      width:46px;height:46px;
+      border-radius:16px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      font-size:22px;
+      flex:0 0 auto;
     }
 
-    .loss-row td {
-      color: #ffffff !important;
-      font-weight: 700;
+    .title{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+    }
+    .desc{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
     }
 
-    .loading {
-      text-align: center;
-      padding: 40px;
-      font-size: 18px;
+    .go{
+      margin-top:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:900;
+      color:#fff;
+      background: rgba(181,92,255,.18);
+      border:1px solid rgba(181,92,255,.25);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      position:relative;
     }
 
-    .error {
-      text-align: center;
-      color: #f87171;
-      padding: 30px;
+    /* Small helper */
+    .note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
     }
 
-    footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      opacity: .6;
+    footer{
+      margin-top:22px;
+      text-align:center;
+      font-size:12px;
+      color:rgba(241,245,249,.55);
     }
 
-    @media (max-width: 768px) {
-      .benefice { font-size: 28px; }
-      table { font-size: 12px; }
-      th, td { padding: 8px; }
+    /* Responsive */
+    @media (max-width: 980px){
+      .kpis{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 560px){
+      .top{ flex-direction:column; align-items:stretch; }
+      .actions{ justify-content:space-between; }
+      .grid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
+  <div class="wrap">
 
-<div class="card">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">BM</div>
+        <div>
+          <h1>ProBMS • لوحة التحكم</h1>
+          <small>واجهة ذكية لعرض الإحصائيات عن بعد</small>
+        </div>
+      </div>
 
-  <div class="logo">
-    <img src="logo.png" alt="ProBMS Logo">
+      <div class="actions">
+        <div class="pill" id="now">⏳ جاري التحميل…</div>
+        <button class="btn secondary" onclick="location.reload()">تحديث</button>
+        <button class="btn" onclick="go('vente.html')">الدخول السريع ➜ مبيعات اليوم</button>
+      </div>
+    </div>
+
+    <!-- KPIs (اختيارية / مؤقتاً قيم ثابتة) -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="tag">اليوم</div>
+        <div class="t">فائدة اليوم</div>
+        <div class="v" id="kpiBenef">—</div>
+      </div>
+      <div class="kpi">
+        <div class="tag">اليوم</div>
+        <div class="t">عدد السلع</div>
+        <div class="v" id="kpiArticles">—</div>
+      </div>
+      <div class="kpi">
+        <div class="tag">اليوم</div>
+        <div class="t">البيع الإجمالي</div>
+        <div class="v" id="kpiVente">—</div>
+      </div>
+      <div class="kpi">
+        <div class="tag">اليوم</div>
+        <div class="t">الشراء الإجمالي</div>
+        <div class="v" id="kpiAchat">—</div>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- 1: مبيعات اليوم -->
+      <div class="card" onclick="go('vente.html')">
+        <div class="row">
+          <div>
+            <h3 class="title">مبيعات اليوم</h3>
+            <p class="desc">فائدة اليوم + تفاصيل السلع مع تلوين الخسارة.</p>
+            <span class="go">فتح الصفحة ⟵</span>
+          </div>
+          <div class="ico">💰</div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="card" onclick="go('versements.html')">
+        <div class="row">
+          <div>
+            <h3 class="title">تسديدات اليوم</h3>
+            <p class="desc">قائمة التسديدات اليومية مع إجمالي المبالغ.</p>
+            <span class="go">فتح الصفحة ⟵</span>
+          </div>
+          <div class="ico">💵</div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="card" onclick="go('credits.html')">
+        <div class="row">
+          <div>
+            <h3 class="title">ديون الزبائن</h3>
+            <p class="desc">أكبر الديون + ترتيب تنازلي + بحث سريع.</p>
+            <span class="go">فتح الصفحة ⟵</span>
+          </div>
+          <div class="ico">📉</div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="card" onclick="go('clients.html')">
+        <div class="row">
+          <div>
+            <h3 class="title">قائمة الزبائن</h3>
+            <p class="desc">قائمة كاملة بالزبائن + الهاتف + الرصيد.</p>
+            <span class="go">فتح الصفحة ⟵</span>
+          </div>
+          <div class="ico">👥</div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="card" onclick="go('top50.html')">
+        <div class="row">
+          <div>
+            <h3 class="title">أفضل 50 منتج مبيعاً</h3>
+            <p class="desc">Top 50 هذا الشهر حسب الكمية أو رقم الأعمال.</p>
+            <span class="go">فتح الصفحة ⟵</span>
+          </div>
+          <div class="ico">🔥</div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="card" onclick="go('seuil.html')">
+        <div class="row">
+          <div>
+            <h3 class="title">سلع العتبة</h3>
+            <p class="desc">المنتجات القريبة من النفاد (Alert Stock).</p>
+            <span class="go">فتح الصفحة ⟵</span>
+          </div>
+          <div class="ico">⚠️</div>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="card" onclick="go('articles.html')">
+        <div class="row">
+          <div>
+            <h3 class="title">قائمة السلع</h3>
+            <p class="desc">كل السلع والأسعار والباركود (إن وجد).</p>
+            <span class="go">فتح الصفحة ⟵</span>
+          </div>
+          <div class="ico">📦</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="note">
+      ✅ نصيحة: سمّ صفحة مبيعات اليوم السابقة باسم <b>vente.html</b> وضعها في نفس المجلد.
+    </div>
+
+    <footer>
+      ProBMS © www.bmsoftdev.com — 06.62.54.14.86 / 07.76.07.77.94
+    </footer>
+
   </div>
 
-  <h1>💰 فائدة اليوم</h1>
-
-  <div id="benefice" class="benefice">--</div>
-
-  <div id="meta" class="meta">جاري التحميل...</div>
-
-  <div id="loading" class="loading">⏳ تحميل البيانات...</div>
-
-  <div id="error" class="error" style="display:none"></div>
-
-  <table id="itemsTable" style="display:none">
-    <thead>
-      <tr>
-        <th>المرجع</th>
-        <th>السلعة</th>
-        <th>الكمية</th>
-        <th>الشراء</th>
-        <th>البيع</th>
-        <th>الفائدة</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-</div>
-
-<footer>
-  ProBMS © https://www.bmsoftdev.com/ — 06.62.54.14.86 / 07.76.07.77.94
-</footer>
-
 <script>
-/* 🔴 رابط JSON */
-const API_URL = "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec";
+  // روابط الـ JSON (اختياري لملء KPIs في الصفحة الرئيسية)
+  const SALES_URL = "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec";
 
-/* تنسيق رقم */
-function format00(value) {
-  return Number(value).toFixed(2);
-}
+  function go(page){ window.location.href = page; }
 
-fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
+  function format00(n){
+    return Number(n).toFixed(2);
+  }
 
-    document.getElementById("loading").style.display = "none";
+  // وقت الآن
+  function setNow(){
+    const d = new Date();
+    const pad = x => String(x).padStart(2,'0');
+    document.getElementById("now").innerText =
+      "🕒 " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds()) +
+      " | 📅 " + d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+  }
+  setNow(); setInterval(setNow, 1000);
 
-    /* فائدة اليوم */
-    const benefDiv = document.getElementById("benefice");
-    benefDiv.innerText = format00(data.benefice) + " دج";
+  // ملء KPIs من نفس JSON تاع المبيعات (اختياري)
+  fetch(SALES_URL)
+    .then(r => r.json())
+    .then(data => {
+      // إذا JSON فيه achat/vente/benefice/articles
+      document.getElementById("kpiBenef").innerText = format00(data.benefice) + " دج";
+      document.getElementById("kpiArticles").innerText = data.articles ?? "—";
+      document.getElementById("kpiVente").innerText = format00(data.vente ?? 0) + " دج";
+      document.getElementById("kpiAchat").innerText = format00(data.achat ?? 0) + " دج";
 
-    if (data.benefice < 0) {
-      benefDiv.className = "benefice benefice-negative";
-    } else {
-      benefDiv.className = "benefice benefice-positive";
-    }
-
-    /* معلومات */
-    document.getElementById("meta").innerText =
-      "📅 " + data.date +
-      " | 🕒 : " + data.lastUpdate +
-      " | 🧾السلع: " + data.articles;
-
-    /* جدول */
-    const tbody = document.querySelector("#itemsTable tbody");
-    tbody.innerHTML = "";
-
-    data.items.forEach(item => {
-
-      const tr = document.createElement("tr");
-
-      // 🔴 إذا خسارة → لوّن السطر كامل
-      if (item.benefice < 0) {
-        tr.classList.add("loss-row");
+      // لون KPI فائدة اليوم
+      if ((data.benefice ?? 0) < 0){
+        document.getElementById("kpiBenef").style.color = "#f97316";
+      } else {
+        document.getElementById("kpiBenef").style.color = "#22c55e";
       }
-
-      tr.innerHTML = `
-        <td>${item.reference}</td>
-        <td style="text-align:right">${item.designation}</td>
-        <td>${item.qte}</td>
-        <td>${format00(item.achat)}</td>
-        <td>${format00(item.vente)}</td>
-        <td>${format00(item.benefice)}</td>
-      `;
-
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById("itemsTable").style.display = "table";
-  })
-  .catch(err => {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("error").style.display = "block";
-    document.getElementById("error").innerText = "❌ خطأ في قراءة البيانات";
-    console.error(err);
-  });
+    })
+    .catch(()=>{ /* تجاهل في حالة عدم توفر الإنترنت */ });
 </script>
 
 </body>
