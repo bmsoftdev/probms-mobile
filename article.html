@@ -223,71 +223,99 @@ ProBMS © www.bmsoftdev.com — 06.62.54.14.86 / 07.76.07.77.94
 </footer>
 
 <script>
-const ARTICLE_URL = "article.json";
+
+// 🔗 رابط Google Drive (Apps Script)
+const ARTICLE_URL =
+"https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec?action=article";
+
 let allItems = [];
 
+// 🔢 تنسيق الأرقام
 function format00(v){
-  return Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2});
+  const n = Number(v);
+  return isNaN(n) ? "0.00" : n.toLocaleString('fr-FR',{minimumFractionDigits:2});
 }
 
+// 🧱 رسم الجدول
 function renderTable(items){
   const tbody = document.querySelector("#articleTable tbody");
   tbody.innerHTML = "";
 
-  items.forEach(a=>{
+  items.forEach(a => {
+
+    const reference   = String(a.reference ?? "");
+    const designation = String(a.designation ?? "");
+    const achat       = Number(a.achat ?? 0);
+    const vente       = Number(a.vente ?? 0);
+    const qte         = Number(a.qte ?? 0);
+    const alerte      = Number(a.alerte ?? 0);
+
     const tr = document.createElement("tr");
 
-    if(a.qte <= 0){
+    if(qte <= 0){
       tr.classList.add("out-stock");
-    }else if(a.qte <= a.alerte){
+    }else if(qte <= alerte){
       tr.classList.add("low-stock");
     }
 
     tr.innerHTML = `
-      <td>${a.reference}</td>
-      <td style="text-align:right">${a.designation}</td>
-      <td>${format00(a.achat)}</td>
-      <td style="font-weight:800">${format00(a.vente)}</td>
-      <td>${a.qte}</td>
+      <td>${reference}</td>
+      <td style="text-align:right">${designation}</td>
+      <td>${format00(achat)}</td>
+      <td style="font-weight:800">${format00(vente)}</td>
+      <td>${qte}</td>
     `;
+
     tbody.appendChild(tr);
   });
 }
 
-// تحميل البيانات
+// 📥 تحميل البيانات
 fetch(ARTICLE_URL)
-  .then(r=>r.json())
-  .then(data=>{
-    document.getElementById("loading").style.display="none";
+  .then(r => r.json())
+  .then(data => {
 
-    allItems = data.items;
+    document.getElementById("loading").style.display = "none";
+
+    allItems = Array.isArray(data.items) ? data.items : [];
+
     document.getElementById("nbArticles").innerText = allItems.length;
-    document.getElementById("nbResults").innerText = allItems.length;
+    document.getElementById("nbResults").innerText  = allItems.length;
 
     renderTable(allItems);
-    document.getElementById("articleTable").style.display="table";
+    document.getElementById("articleTable").style.display = "table";
   })
-  .catch(err=>{
+  .catch(err => {
     document.getElementById("loading").style.display="none";
     document.getElementById("error").style.display="block";
     document.getElementById("error").innerText="❌ خطأ في تحميل ملف السلع";
     console.error(err);
   });
 
-// البحث
+// 🔍 البحث
 document.getElementById("searchInput").addEventListener("input", function(){
+
   const q = this.value.toLowerCase().trim();
 
-  const filtered = allItems.filter(a =>
-    a.reference.toLowerCase().includes(q) ||
-    a.designation.toLowerCase().includes(q) ||
-    String(a.vente).includes(q)
-  );
+  const filtered = allItems.filter(a => {
+
+    const ref  = String(a.reference ?? "").toLowerCase();
+    const des  = String(a.designation ?? "").toLowerCase();
+    const vent = String(a.vente ?? "");
+
+    return (
+      ref.includes(q) ||
+      des.includes(q) ||
+      vent.includes(q)
+    );
+  });
 
   renderTable(filtered);
   document.getElementById("nbResults").innerText = filtered.length;
 });
+
 </script>
+
 
 </body>
 </html>

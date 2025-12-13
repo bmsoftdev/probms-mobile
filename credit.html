@@ -11,7 +11,6 @@
 :root{
   --bg1:#070517;
   --bg2:#120a2a;
-  --card:#0e0a1f;
   --stroke:rgba(255,255,255,.08);
   --text:#f1f5f9;
   --muted:rgba(241,245,249,.7);
@@ -19,9 +18,7 @@
   --mauve2:#7c3aed;
   --shadow:0 25px 60px rgba(0,0,0,.5);
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:'Cairo',Tahoma;
@@ -29,143 +26,53 @@ body{
     radial-gradient(900px 500px at 15% 10%, rgba(181,92,255,.25), transparent 60%),
     linear-gradient(135deg,var(--bg1),var(--bg2));
   color:var(--text);
-  min-height:100vh;
 }
-
-.container{
-  max-width:1100px;
-  margin:30px auto;
-  padding:20px;
-}
-
+.container{max-width:1100px;margin:30px auto;padding:20px}
 .header{
   background:linear-gradient(135deg, rgba(181,92,255,.18), rgba(14,10,31,.7));
   border:1px solid var(--stroke);
   border-radius:18px;
   padding:18px;
   box-shadow:var(--shadow);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  display:flex;justify-content:space-between;align-items:center;
 }
-
-.header h1{
-  margin:0;
-  font-size:22px;
-  font-weight:800;
-}
-
 .back{
   background:linear-gradient(135deg,var(--mauve),var(--mauve2));
-  border:none;
-  color:white;
-  padding:10px 16px;
-  border-radius:14px;
-  font-weight:800;
-  cursor:pointer;
+  border:none;color:white;padding:10px 16px;
+  border-radius:14px;font-weight:800;cursor:pointer;
 }
-
-/* 🔍 البحث */
-.search-box{
-  margin-top:18px;
-  display:flex;
-  gap:10px;
-}
-
+.search-box{margin-top:18px}
 .search-box input{
-  width:100%;
-  padding:12px 14px;
-  border-radius:14px;
+  width:100%;padding:12px 14px;border-radius:14px;
   border:1px solid var(--stroke);
-  background:rgba(14,10,31,.7);
-  color:var(--text);
-  font-family:'Cairo';
-  font-size:14px;
+  background:rgba(14,10,31,.7);color:white;
 }
-
 .stats{
-  margin-top:20px;
-  display:grid;
+  margin-top:20px;display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:15px;
 }
-
 .stat{
   background:rgba(14,10,31,.7);
   border:1px solid var(--stroke);
-  border-radius:16px;
-  padding:16px;
-  box-shadow:var(--shadow);
+  border-radius:16px;padding:16px;
 }
-
-.stat span{
-  display:block;
-  font-size:13px;
-  color:var(--muted);
-}
-
-.stat strong{
-  font-size:22px;
-  font-weight:900;
-  color:var(--mauve);
-}
-
+.stat span{font-size:13px;color:var(--muted)}
+.stat strong{font-size:22px;color:var(--mauve)}
 .table-card{
-  margin-top:25px;
-  background:rgba(14,10,31,.7);
+  margin-top:25px;background:rgba(14,10,31,.7);
   border:1px solid var(--stroke);
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
+  border-radius:18px;overflow:hidden;
 }
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-}
-
-th,td{
-  padding:12px;
-  border-bottom:1px solid #1f2937;
-  text-align:center;
-}
-
-th{
-  background:#020617;
-  font-weight:800;
-}
-
-/* 🔴 أعلى 3 ديون */
-.top-debt{
-  background:linear-gradient(135deg,#7f1d1d,#b91c1c);
-}
-
-.top-debt td{
-  color:#fff;
-  font-weight:800;
-}
-
-/* 🟣 باقي السطور */
-.normal-row{
-  background:rgba(14,10,31,.6);
-}
-
-.loading,.error,.empty{
-  text-align:center;
-  padding:30px;
-  font-size:16px;
-}
-
-.error{color:#f87171}
-.empty{color:#facc15}
-
-footer{
-  margin-top:25px;
-  text-align:center;
-  font-size:12px;
-  opacity:.6;
-}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #1f2937;text-align:center}
+th{background:#020617}
+.top-debt{background:linear-gradient(135deg,#7f1d1d,#b91c1c)}
+.top-debt td{color:#fff;font-weight:800}
+.normal-row{background:rgba(14,10,31,.6)}
+.loading,.error,.empty{text-align:center;padding:30px}
+.error{color:#f87171}.empty{color:#facc15}
+footer{text-align:center;margin-top:25px;font-size:12px;opacity:.6}
 </style>
 </head>
 
@@ -178,9 +85,8 @@ footer{
     <button class="back" onclick="location.href='index.html'">⬅ الرجوع</button>
   </div>
 
-  <!-- 🔍 البحث -->
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="🔍 ابحث باسم الزبون أو رقم الهاتف">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث باسم الزبون أو الهاتف">
   </div>
 
   <div class="stats">
@@ -196,7 +102,7 @@ footer{
 
   <div id="loading" class="loading">⏳ تحميل الديون...</div>
   <div id="error" class="error" style="display:none"></div>
-  <div id="empty" class="empty" style="display:none">لا توجد نتائج 🔍</div>
+  <div id="empty" class="empty" style="display:none">لا توجد نتائج</div>
 
   <div class="table-card">
     <table id="creditsTable" style="display:none">
@@ -213,69 +119,73 @@ footer{
 </div>
 
 <footer>
-ProBMS © www.bmsoftdev.com — 06.62.54.14.86 / 07.76.07.77.94
+ProBMS © www.bmsoftdev.com
 </footer>
 
 <script>
-const CREDIT_URL = "credit.json";
+const CREDIT_URL =
+"https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec?action=credit";
+
 let allClients = [];
 
-function format00(v){
-  return Number(v).toLocaleString('fr-FR',{minimumFractionDigits:2});
-}
+function num(v){ return Number(v)||0; }
 
 function render(list){
   const tbody = document.querySelector("#creditsTable tbody");
   tbody.innerHTML="";
   document.getElementById("empty").style.display = list.length ? "none":"block";
 
-  list.forEach((c,index)=>{
-    const tr=document.createElement("tr");
+  list.forEach((c,i)=>{
+    const name = c.client ?? c.ClientC ?? "";
+    const phone = c.mobile ?? c.MobC ?? "";
+    const solde = c.solde ?? c.SoldeC ?? 0;
 
-    if(index < 3){
-      tr.className="top-debt";
-    }else{
-      tr.className="normal-row";
-    }
+    const tr=document.createElement("tr");
+    tr.className = i<3 ? "top-debt":"normal-row";
 
     tr.innerHTML=`
       <td style="text-align:right">
-        ${c.client}
-        <div style="font-size:13px;margin-top:4px">
-          💰 ${format00(c.solde)} دج
-        </div>
+        ${name}
+        <div style="font-size:13px">💰 ${num(solde).toLocaleString('fr-FR')} دج</div>
       </td>
-      <td>${c.mobile || ""}</td>
-    `;
+      <td>${phone}</td>`;
     tbody.appendChild(tr);
   });
 }
 
 fetch(CREDIT_URL)
-  .then(r=>r.json())
-  .then(data=>{
-    document.getElementById("loading").style.display="none";
-    document.getElementById("nbClients").innerText=data.clients;
-    document.getElementById("totalDebt").innerText=format00(data.totalDebt)+" دج";
+.then(r=>r.json())
+.then(data=>{
+  document.getElementById("loading").style.display="none";
 
-    allClients = data.items;
-    render(allClients);
-    document.getElementById("creditsTable").style.display="table";
-  })
-  .catch(()=>{
-    document.getElementById("loading").style.display="none";
-    document.getElementById("error").style.display="block";
-    document.getElementById("error").innerText="❌ خطأ في تحميل ملف الديون";
-  });
+  const items = data.items || [];
+  allClients = items;
 
-/* 🔍 البحث */
-document.getElementById("searchInput").addEventListener("input", e=>{
-  const q = e.target.value.toLowerCase().trim();
-  const filtered = allClients.filter(c =>
-    c.client.toLowerCase().includes(q) ||
-    (c.mobile || "").toLowerCase().includes(q)
-  );
-  render(filtered);
+  document.getElementById("nbClients").innerText =
+    data.nbClients ?? items.length;
+
+  const total = data.totalDebt ?? data.totalSolde ??
+    items.reduce((s,c)=>s+num(c.solde??c.SoldeC),0);
+
+  document.getElementById("totalDebt").innerText =
+    total.toLocaleString('fr-FR')+" دج";
+
+  render(items);
+  document.getElementById("creditsTable").style.display="table";
+})
+.catch(e=>{
+  document.getElementById("loading").style.display="none";
+  document.getElementById("error").style.display="block";
+  document.getElementById("error").innerText="❌ فشل تحميل البيانات";
+  console.error(e);
+});
+
+document.getElementById("searchInput").addEventListener("input",e=>{
+  const q=e.target.value.toLowerCase();
+  render(allClients.filter(c =>
+    (c.client??c.ClientC??"").toLowerCase().includes(q) ||
+    (c.mobile??c.MobC??"").toLowerCase().includes(q)
+  ));
 });
 </script>
 
