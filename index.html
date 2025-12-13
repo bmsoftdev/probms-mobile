@@ -8,98 +8,165 @@
   <style>
     body {
       margin: 0;
-      height: 100vh;
-      background: radial-gradient(circle at top, #0b1a33, #050b18);
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
+      font-family: Tahoma, Arial;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: #e5e7eb;
     }
+
     .card {
-      background: #0f1d35;
-      padding: 30px 40px;
-      border-radius: 14px;
-      text-align: center;
-      box-shadow: 0 15px 40px rgba(0,0,0,.4);
-      min-width: 260px;
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #0b1220;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.6);
     }
-    .title {
-      font-size: 18px;
+
+    h1 {
+      text-align: center;
       margin-bottom: 10px;
     }
-    .amount {
+
+    .benefice {
+      text-align: center;
       font-size: 32px;
-      color: #3ddc84;
-      margin: 15px 0;
+      color: #22c55e;
+      margin: 10px 0;
       font-weight: bold;
     }
-    .time {
-      font-size: 13px;
+
+    .meta {
+      text-align: center;
+      font-size: 14px;
       opacity: .8;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
-    button {
-      background: #1a73e8;
-      border: none;
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
-    button:hover {
-      background: #155ec0;
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #1f2937;
+      text-align: center;
     }
+
+    th {
+      background: #020617;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+    }
+
     .error {
-      color: #ff6b6b;
-      font-size: 14px;
+      text-align: center;
+      color: #f87171;
+      padding: 30px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      opacity: .6;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="card">
-    <div class="title">💰 فائدة اليوم</div>
-    <div id="amount" class="amount">---</div>
-    <div id="time" class="time"></div>
-    <button onclick="loadData()">🔄 تحديث</button>
-    <div id="error" class="error"></div>
-  </div>
+<div class="card">
 
-  <script>
-    const JSON_URL = "https://script.google.com/macros/s/AKfycbzQoqy0OWEapJ_UmMKlwAMWA4RH1_7flIpzSSbzJLnUSTWnnI-syemjr50PksMRbc9I/exec";
+  <h1>💰 فائدة اليوم</h1>
 
-    function loadData() {
-      document.getElementById("error").textContent = "";
+  <div id="benefice" class="benefice">--</div>
 
-      fetch(JSON_URL)
-        .then(res => res.json())
-        .then(data => {
+  <div id="meta" class="meta">تحميل...</div>
 
-          if (typeof data.beneficeJour !== "number") {
-            throw "قيمة غير صالحة";
-          }
+  <div id="loading" class="loading">جاري تحميل البيانات...</div>
 
-          document.getElementById("amount").textContent =
-            data.beneficeJour.toLocaleString("fr-DZ") + " دج";
+  <div id="error" class="error" style="display:none"></div>
 
-          document.getElementById("time").textContent =
-            "آخر تحديث: " + (data.lastUpdate || "--:--");
+  <table id="itemsTable" style="display:none">
+    <thead>
+      <tr>
+        <th>المرجع</th>
+        <th>السلعة</th>
+        <th>الكمية</th>
+        <th>الشراء</th>
+        <th>البيع</th>
+        <th>الفائدة</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-        })
-        .catch(err => {
-          document.getElementById("amount").textContent = "---";
-          document.getElementById("time").textContent = "";
-          document.getElementById("error").textContent = "خطأ في جلب البيانات";
-          console.error(err);
-        });
-    }
+</div>
 
-    // تحميل تلقائي عند الفتح
-    loadData();
-  </script>
+<footer>
+  ProBMS © BM SOFT
+</footer>
+
+<script>
+/* 🔴 ضع رابط Apps Script هنا */
+const API_URL = "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec";
+
+/* تحميل البيانات */
+fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+
+    document.getElementById("loading").style.display = "none";
+
+    // فائدة اليوم
+    document.getElementById("benefice").innerText =
+      data.benefice.toLocaleString("fr-DZ") + " دج";
+
+    // معلومات إضافية
+    document.getElementById("meta").innerText =
+      "📅 " + data.date +
+      " | 🕒 آخر تحديث: " + data.lastUpdate +
+      " | 🧾 عدد السلع: " + data.articles;
+
+    // جدول السلع
+    const tbody = document.querySelector("#itemsTable tbody");
+    tbody.innerHTML = "";
+
+    data.items.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.reference}</td>
+        <td style="text-align:right">${item.designation}</td>
+        <td>${item.qte}</td>
+        <td>${item.achat}</td>
+        <td>${item.vente}</td>
+        <td style="color:#22c55e">${item.benefice}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("itemsTable").style.display = "table";
+
+  })
+  .catch(err => {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("error").style.display = "block";
+    document.getElementById("error").innerText = "❌ خطأ في قراءة JSON";
+    console.error(err);
+  });
+</script>
 
 </body>
 </html>
