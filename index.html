@@ -333,7 +333,7 @@
       </div>
 
       <!-- 2 -->
-      <div class="card" onclick="go('versements.html')">
+      <div class="card" onclick="go('versement.html')">
         <div class="row">
           <div>
             <h3 class="title">تسديدات اليوم</h3>
@@ -345,7 +345,7 @@
       </div>
 
       <!-- 3 -->
-      <div class="card" onclick="go('credits.html')">
+      <div class="card" onclick="go('credit.html')">
         <div class="row">
           <div>
             <h3 class="title">ديون الزبائن</h3>
@@ -357,7 +357,7 @@
       </div>
 
       <!-- 4 -->
-      <div class="card" onclick="go('clients.html')">
+      <div class="card" onclick="go('client.html')">
         <div class="row">
           <div>
             <h3 class="title">قائمة الزبائن</h3>
@@ -393,7 +393,7 @@
       </div>
 
       <!-- 7 -->
-      <div class="card" onclick="go('articles.html')">
+      <div class="card" onclick="go('article.html')">
         <div class="row">
           <div>
             <h3 class="title">قائمة السلع</h3>
@@ -440,9 +440,9 @@
   fetch(SALES_URL)
     .then(r => r.json())
     .then(data => {
-      // إذا JSON فيه achat/vente/benefice/articles
+      // إذا JSON فيه achat/vente/benefice/article
       document.getElementById("kpiBenef").innerText = format00(data.benefice) + " دج";
-      document.getElementById("kpiArticles").innerText = data.articles ?? "—";
+      document.getElementById("kpiArticles").innerText = data.article ?? "—";
       document.getElementById("kpiVente").innerText = format00(data.vente ?? 0) + " دج";
       document.getElementById("kpiAchat").innerText = format00(data.achat ?? 0) + " دج";
 
