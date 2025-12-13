@@ -2,11 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>ProBMS – مبيعات اليوم</title>
+  <title>مبيعات اليوم</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- خط عربي ناعم -->
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- خط Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     body {
@@ -14,59 +14,66 @@
       font-family: 'Cairo', Tahoma, Arial, sans-serif;
       background: linear-gradient(135deg, #0f172a, #020617);
       color: #e5e7eb;
-      font-weight: 400;
     }
 
     .card {
       max-width: 1100px;
       margin: 30px auto;
       background: #0b1220;
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 18px;
+      padding: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,.6);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .logo img {
+      width: 80px;
+      opacity: 0.95;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 10px;
-      font-weight: 600;
+      margin: 5px 0;
+      font-weight: 800;
     }
 
     .benefice {
       text-align: center;
-      font-size: 30px;
+      font-size: 36px;
       color: #22c55e;
-      margin: 8px 0;
-      font-weight: 500;
-      font-variant-numeric: tabular-nums;
+      margin: 10px 0;
+      font-weight: 700;
     }
 
     .meta {
       text-align: center;
       font-size: 14px;
-      opacity: .75;
-      margin-bottom: 18px;
+      opacity: .85;
+      margin-bottom: 20px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      font-size: 14px;
     }
 
     th, td {
       padding: 10px;
       border-bottom: 1px solid #1f2937;
       text-align: center;
-      font-weight: 400;
     }
 
     th {
       background: #020617;
       position: sticky;
       top: 0;
-      font-weight: 500;
-      letter-spacing: .3px;
+      font-weight: 700;
     }
 
     tr:hover {
@@ -76,7 +83,7 @@
     .loading {
       text-align: center;
       padding: 40px;
-      font-size: 16px;
+      font-size: 18px;
     }
 
     .error {
@@ -87,69 +94,15 @@
 
     footer {
       text-align: center;
-      margin: 20px 0;
+      margin-top: 20px;
       font-size: 12px;
       opacity: .6;
     }
 
-    /* ===== MOBILE ===== */
     @media (max-width: 768px) {
-
-      table {
-        display: none;
-      }
-
-      .benefice {
-        font-size: 24px;
-      }
-
-      .mobile-list {
-        display: block;
-        margin-top: 15px;
-      }
-
-      .item-card {
-        background: #020617;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,.4);
-      }
-
-      .item-title {
-        font-size: 15px;
-        font-weight: 600;
-        margin-bottom: 4px;
-      }
-
-      .item-ref {
-        font-size: 12px;
-        opacity: .65;
-        margin-bottom: 8px;
-      }
-
-      .item-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-        font-size: 13px;
-      }
-
-      .item-grid span {
-        opacity: .7;
-      }
-
-      .item-benefice {
-        grid-column: span 2;
-        text-align: center;
-        color: #22c55e;
-        font-weight: 500;
-        margin-top: 6px;
-      }
-    }
-
-    .mobile-list {
-      display: none;
+      .benefice { font-size: 28px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px; }
     }
   </style>
 </head>
@@ -158,17 +111,21 @@
 
 <div class="card">
 
-  <h1>💰 مبيعات اليوم</h1>
+  <!-- الشعار -->
+  <div class="logo">
+    <img src="logo.png" alt="ProBMS Logo">
+  </div>
+
+  <h1>💰 فائدة اليوم</h1>
 
   <div id="benefice" class="benefice">--</div>
 
-  <div id="meta" class="meta">تحميل...</div>
+  <div id="meta" class="meta">جاري التحميل...</div>
 
-  <div id="loading" class="loading">جاري تحميل البيانات...</div>
+  <div id="loading" class="loading">⏳ تحميل البيانات...</div>
 
   <div id="error" class="error" style="display:none"></div>
 
-  <!-- TABLE DESKTOP -->
   <table id="itemsTable" style="display:none">
     <thead>
       <tr>
@@ -183,17 +140,20 @@
     <tbody></tbody>
   </table>
 
-  <!-- MOBILE -->
-  <div id="mobileList" class="mobile-list"></div>
-
 </div>
 
 <footer>
-  ProBMS © BM SOFT DEV — 06.62.54.14.86 | 07.76.07.77.94
+  ProBMS © BM SOFT SETIF 06.62.54.14.86 / 07.76.07.77.94
 </footer>
 
 <script>
+/* 🔴 رابط Google Apps Script */
 const API_URL = "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec";
+
+/* ✅ تنسيق الرقم: 1500 → 1500.00 */
+function format00(value) {
+  return Number(value).toFixed(2);
+}
 
 fetch(API_URL)
   .then(res => res.json())
@@ -201,15 +161,17 @@ fetch(API_URL)
 
     document.getElementById("loading").style.display = "none";
 
+    // فائدة اليوم
     document.getElementById("benefice").innerText =
-      data.benefice.toLocaleString("fr-DZ") + " دج";
+      format00(data.benefice) + " دج";
 
+    // معلومات إضافية
     document.getElementById("meta").innerText =
       "📅 " + data.date +
-      " | 🕒 " + data.lastUpdate +
+      " | 🕒 آخر تحديث: " + data.lastUpdate +
       " | 🧾 عدد السلع: " + data.articles;
 
-    // Desktop table
+    // جدول السلع
     const tbody = document.querySelector("#itemsTable tbody");
     tbody.innerHTML = "";
 
@@ -219,41 +181,22 @@ fetch(API_URL)
         <td>${item.reference}</td>
         <td style="text-align:right">${item.designation}</td>
         <td>${item.qte}</td>
-        <td>${item.achat}</td>
-        <td>${item.vente}</td>
-        <td style="color:#22c55e">${item.benefice}</td>
+        <td>${format00(item.achat)}</td>
+        <td>${format00(item.vente)}</td>
+        <td style="color:#22c55e;font-weight:600">
+          ${format00(item.benefice)}
+        </td>
       `;
       tbody.appendChild(tr);
     });
 
     document.getElementById("itemsTable").style.display = "table";
-
-    // Mobile cards
-    const mobileList = document.getElementById("mobileList");
-    mobileList.innerHTML = "";
-
-    data.items.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "item-card";
-      div.innerHTML = `
-        <div class="item-title">${item.designation}</div>
-        <div class="item-ref">المرجع: ${item.reference}</div>
-
-        <div class="item-grid">
-          <div><span>الكمية:</span> ${item.qte}</div>
-          <div><span>الشراء:</span> ${item.achat}</div>
-          <div><span>البيع:</span> ${item.vente}</div>
-          <div class="item-benefice">الفائدة: ${item.benefice} دج</div>
-        </div>
-      `;
-      mobileList.appendChild(div);
-    });
-
   })
-  .catch(() => {
+  .catch(err => {
     document.getElementById("loading").style.display = "none";
     document.getElementById("error").style.display = "block";
     document.getElementById("error").innerText = "❌ خطأ في قراءة البيانات";
+    console.error(err);
   });
 </script>
 
