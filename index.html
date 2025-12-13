@@ -2,15 +2,19 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>ProBMS – فائدة اليوم</title>
+  <title>ProBMS – مبيعات اليوم</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- خط عربي ناعم -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
     body {
       margin: 0;
-      font-family: Tahoma, Arial;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
       background: linear-gradient(135deg, #0f172a, #020617);
       color: #e5e7eb;
+      font-weight: 400;
     }
 
     .card {
@@ -25,21 +29,23 @@
     h1 {
       text-align: center;
       margin-bottom: 10px;
+      font-weight: 600;
     }
 
     .benefice {
       text-align: center;
-      font-size: 32px;
+      font-size: 30px;
       color: #22c55e;
-      margin: 10px 0;
-      font-weight: bold;
+      margin: 8px 0;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
     }
 
     .meta {
       text-align: center;
       font-size: 14px;
-      opacity: .8;
-      margin-bottom: 20px;
+      opacity: .75;
+      margin-bottom: 18px;
     }
 
     table {
@@ -52,12 +58,15 @@
       padding: 10px;
       border-bottom: 1px solid #1f2937;
       text-align: center;
+      font-weight: 400;
     }
 
     th {
       background: #020617;
       position: sticky;
       top: 0;
+      font-weight: 500;
+      letter-spacing: .3px;
     }
 
     tr:hover {
@@ -67,7 +76,7 @@
     .loading {
       text-align: center;
       padding: 40px;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .error {
@@ -91,7 +100,7 @@
       }
 
       .benefice {
-        font-size: 26px;
+        font-size: 24px;
       }
 
       .mobile-list {
@@ -109,13 +118,13 @@
 
       .item-title {
         font-size: 15px;
-        font-weight: bold;
+        font-weight: 600;
         margin-bottom: 4px;
       }
 
       .item-ref {
         font-size: 12px;
-        opacity: .7;
+        opacity: .65;
         margin-bottom: 8px;
       }
 
@@ -134,7 +143,7 @@
         grid-column: span 2;
         text-align: center;
         color: #22c55e;
-        font-weight: bold;
+        font-weight: 500;
         margin-top: 6px;
       }
     }
@@ -149,7 +158,7 @@
 
 <div class="card">
 
-  <h1>💰 فائدة اليوم</h1>
+  <h1>💰 مبيعات اليوم</h1>
 
   <div id="benefice" class="benefice">--</div>
 
@@ -159,7 +168,7 @@
 
   <div id="error" class="error" style="display:none"></div>
 
-  <!-- TABLE (DESKTOP) -->
+  <!-- TABLE DESKTOP -->
   <table id="itemsTable" style="display:none">
     <thead>
       <tr>
@@ -174,17 +183,16 @@
     <tbody></tbody>
   </table>
 
-  <!-- MOBILE CARDS -->
+  <!-- MOBILE -->
   <div id="mobileList" class="mobile-list"></div>
 
 </div>
 
 <footer>
-  ProBMS © BM SOFT
+  ProBMS © BM SOFT DEV — 06.62.54.14.86 | 07.76.07.77.94
 </footer>
 
 <script>
-/* 🔴 رابط Apps Script */
 const API_URL = "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec";
 
 fetch(API_URL)
@@ -193,17 +201,15 @@ fetch(API_URL)
 
     document.getElementById("loading").style.display = "none";
 
-    // فائدة اليوم
     document.getElementById("benefice").innerText =
       data.benefice.toLocaleString("fr-DZ") + " دج";
 
-    // معلومات
     document.getElementById("meta").innerText =
       "📅 " + data.date +
       " | 🕒 " + data.lastUpdate +
       " | 🧾 عدد السلع: " + data.articles;
 
-    /* ===== TABLE ===== */
+    // Desktop table
     const tbody = document.querySelector("#itemsTable tbody");
     tbody.innerHTML = "";
 
@@ -222,7 +228,7 @@ fetch(API_URL)
 
     document.getElementById("itemsTable").style.display = "table";
 
-    /* ===== MOBILE ===== */
+    // Mobile cards
     const mobileList = document.getElementById("mobileList");
     mobileList.innerHTML = "";
 
@@ -244,11 +250,10 @@ fetch(API_URL)
     });
 
   })
-  .catch(err => {
+  .catch(() => {
     document.getElementById("loading").style.display = "none";
     document.getElementById("error").style.display = "block";
     document.getElementById("error").innerText = "❌ خطأ في قراءة البيانات";
-    console.error(err);
   });
 </script>
 
