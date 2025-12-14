@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>ديون الزبائن</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg1:#070517;
+  --bg2:#120a2a;
+  --stroke:rgba(255,255,255,.08);
+  --text:#f1f5f9;
+  --muted:rgba(241,245,249,.7);
+  --mauve:#b55cff;
+  --mauve2:#7c3aed;
+  --shadow:0 25px 60px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Cairo',Tahoma;
+  background:
+    radial-gradient(900px 500px at 15% 10%, rgba(181,92,255,.25), transparent 60%),
+    linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--text);
+}
+.container{max-width:1100px;margin:30px auto;padding:20px}
+.header{
+  background:linear-gradient(135deg, rgba(181,92,255,.18), rgba(14,10,31,.7));
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.back{
+  background:linear-gradient(135deg,var(--mauve),var(--mauve2));
+  border:none;color:white;padding:10px 16px;
+  border-radius:14px;font-weight:800;cursor:pointer;
+}
+.search-box{margin-top:18px}
+.search-box input{
+  width:100%;padding:12px 14px;border-radius:14px;
+  border:1px solid var(--stroke);
+  background:rgba(14,10,31,.7);color:white;
+}
+.stats{
+  margin-top:20px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+.stat{
+  background:rgba(14,10,31,.7);
+  border:1px solid var(--stroke);
+  border-radius:16px;padding:16px;
+}
+.stat span{font-size:13px;color:var(--muted)}
+.stat strong{font-size:22px;color:var(--mauve)}
+.table-card{
+  margin-top:25px;background:rgba(14,10,31,.7);
+  border:1px solid var(--stroke);
+  border-radius:18px;overflow:hidden;
+}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #1f2937;text-align:center}
+th{background:#020617}
+.top-debt{background:linear-gradient(135deg,#7f1d1d,#b91c1c)}
+.top-debt td{color:#fff;font-weight:800}
+.normal-row{background:rgba(14,10,31,.6)}
+.loading,.error,.empty{text-align:center;padding:30px}
+.error{color:#f87171}.empty{color:#facc15}
+footer{text-align:center;margin-top:25px;font-size:12px;opacity:.6}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>📉 ديون الزبائن</h1>
+    <button class="back" onclick="location.href='index.html'">⬅ الرجوع</button>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث باسم الزبون أو الهاتف">
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span>عدد الزبائن المدينين</span>
+      <strong id="nbClients">—</strong>
+    </div>
+    <div class="stat">
+      <span>إجمالي الديون</span>
+      <strong id="totalDebt">—</strong>
+    </div>
+  </div>
+
+  <div id="loading" class="loading">⏳ تحميل الديون...</div>
+  <div id="error" class="error" style="display:none"></div>
+  <div id="empty" class="empty" style="display:none">لا توجد نتائج</div>
+
+  <div class="table-card">
+    <table id="creditsTable" style="display:none">
+      <thead>
+        <tr>
+          <th>الزبون</th>
+          <th>الهاتف</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+ProBMS © www.bmsoftdev.com
+</footer>
+
+<script>
+const VERSEMENT_URL = "logiciel.json";
+
+let allClients = [];
+
+function num(v){ return Number(v)||0; }
+
+function render(list){
+  const tbody = document.querySelector("#creditsTable tbody");
+  tbody.innerHTML="";
+  document.getElementById("empty").style.display = list.length ? "none":"block";
+
+  list.forEach((c,i)=>{
+    const name = c.client ?? c.ClientC ?? "";
+    const phone = c.mobile ?? c.MobC ?? "";
+    const solde = c.solde ?? c.SoldeC ?? 0;
+
+    const tr=document.createElement("tr");
+    tr.className = i<3 ? "top-debt":"normal-row";
+
+    tr.innerHTML=`
+      <td style="text-align:right">
+        ${name}
+        <div style="font-size:13px">💰 ${num(solde).toLocaleString('fr-FR')} دج</div>
+      </td>
+      <td>${phone}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+fetch(CREDIT_URL)
+.then(r=>r.json())
+.then(data=>{
+  document.getElementById("loading").style.display="none";
+
+  const items = data.items || [];
+  allClients = items;
+
+  document.getElementById("nbClients").innerText =
+    data.nbClients ?? items.length;
+
+  const total = data.totalDebt ?? data.totalSolde ??
+    items.reduce((s,c)=>s+num(c.solde??c.SoldeC),0);
+
+  document.getElementById("totalDebt").innerText =
+    total.toLocaleString('fr-FR')+" دج";
+
+  render(items);
+  document.getElementById("creditsTable").style.display="table";
+})
+.catch(e=>{
+  document.getElementById("loading").style.display="none";
+  document.getElementById("error").style.display="block";
+  document.getElementById("error").innerText="❌ فشل تحميل البيانات";
+  console.error(e);
+});
+
+document.getElementById("searchInput").addEventListener("input",e=>{
+  const q=e.target.value.toLowerCase();
+  render(allClients.filter(c =>
+    (c.client??c.ClientC??"").toLowerCase().includes(q) ||
+    (c.mobile??c.MobC??"").toLowerCase().includes(q)
+  ));
+});
+</script>
+
+</body>
+</html>
