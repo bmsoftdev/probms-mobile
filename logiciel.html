@@ -123,72 +123,73 @@ ProBMS © www.bmsoftdev.com
 </footer>
 
 <script>
-//const CREDIT_URL =
-//"https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec?action=credit";
-
-
-const CREDIT_URL = "logiciel.json";
-
-
+const CREDIT_URL = "./logiciel.json";
 let allClients = [];
 
 function num(v){ return Number(v)||0; }
 
 function render(list){
   const tbody = document.querySelector("#creditsTable tbody");
-  tbody.innerHTML="";
-  document.getElementById("empty").style.display = list.length ? "none":"block";
+  tbody.innerHTML = "";
+
+  document.getElementById("empty").style.display =
+    list.length ? "none" : "block";
 
   list.forEach((c,i)=>{
-    const name = c.client ?? c.ClientC ?? "";
-    const phone = c.mobile ?? c.MobC ?? "";
-    const solde = c.solde ?? c.SoldeC ?? 0;
+    const name  = c.client  ?? "";
+    const phone = c.mobile  ?? "";
+    const solde = num(c.solde);
 
-    const tr=document.createElement("tr");
-    tr.className = i<3 ? "top-debt":"normal-row";
+    const tr = document.createElement("tr");
+    tr.className = i < 3 ? "top-debt" : "normal-row";
 
-    tr.innerHTML=`
+    tr.innerHTML = `
       <td style="text-align:right">
         ${name}
-        <div style="font-size:13px">💰 ${num(solde).toLocaleString('fr-FR')} دج</div>
+        <div style="font-size:13px">💰 ${solde.toLocaleString('fr-FR')} دج</div>
       </td>
-      <td>${phone}</td>`;
+      <td>${phone}</td>
+    `;
     tbody.appendChild(tr);
   });
+
+  document.getElementById("creditsTable").style.display = "table";
 }
 
 fetch(CREDIT_URL)
-.then(r=>r.json())
-.then(data=>{
-  document.getElementById("loading").style.display="none";
+.then(r => r.json())
+.then(data => {
+  document.getElementById("loading").style.display = "none";
 
-  const items = data.items || [];
+  const items = Array.isArray(data.items) ? data.items : [];
+  items.sort((a,b)=>num(b.solde)-num(a.solde));
+
   allClients = items;
 
   document.getElementById("nbClients").innerText =
-    data.nbClients ?? items.length;
+    data.clients ?? items.length;
 
-  const total = data.totalDebt ?? data.totalSolde ??
-    items.reduce((s,c)=>s+num(c.solde??c.SoldeC),0);
+  const total =
+    data.totalDebt ??
+    items.reduce((s,c)=>s+num(c.solde),0);
 
   document.getElementById("totalDebt").innerText =
-    total.toLocaleString('fr-FR')+" دج";
+    total.toLocaleString('fr-FR') + " دج";
 
   render(items);
-  document.getElementById("creditsTable").style.display="table";
 })
-.catch(e=>{
+.catch(err=>{
   document.getElementById("loading").style.display="none";
   document.getElementById("error").style.display="block";
   document.getElementById("error").innerText="❌ فشل تحميل البيانات";
-  console.error(e);
+  console.error(err);
 });
 
 document.getElementById("searchInput").addEventListener("input",e=>{
-  const q=e.target.value.toLowerCase();
+  const q = e.target.value.toLowerCase();
   render(allClients.filter(c =>
-    (c.client??c.ClientC??"").toLowerCase().includes(q) ||
-    (c.mobile??c.MobC??"").toLowerCase().includes(q)
+    (c.client ?? "").toLowerCase().includes(q) ||
+    (c.mobile ?? "").toLowerCase().includes(q)
   ));
 });
 </script>
