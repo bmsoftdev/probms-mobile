@@ -143,16 +143,8 @@ tr:hover{
   background:rgba(181,92,255,.08);
 }
 
-/* 🟠 تنبيه العتبة */
-.low-stock{
-  background:rgba(249,115,22,.18);
-}
-
-/* 🔴 نفاد */
-.out-stock{
-  background:rgba(239,68,68,.25);
-  font-weight:800;
-}
+.low-stock{ background:rgba(249,115,22,.18); }
+.out-stock{ background:rgba(239,68,68,.25); font-weight:800; }
 
 .loading,.error{
   text-align:center;
@@ -180,7 +172,6 @@ footer{
     <button class="back" onclick="location.href='index.html'">⬅ الرجوع</button>
   </div>
 
-  <!-- الإحصائيات -->
   <div class="stats">
     <div class="stat">
       <span>عدد السلع الكلي</span>
@@ -192,7 +183,6 @@ footer{
     </div>
   </div>
 
-  <!-- البحث -->
   <div class="search">
     <input type="text" id="searchInput" placeholder="🔍 بحث بالمرجع أو التعيين أو سعر البيع...">
   </div>
@@ -200,7 +190,6 @@ footer{
   <div id="loading" class="loading">⏳ تحميل السلع...</div>
   <div id="error" class="error" style="display:none"></div>
 
-  <!-- الجدول -->
   <div class="table-card">
     <table id="articleTable" style="display:none">
       <thead>
@@ -223,78 +212,45 @@ ProBMS © www.bmsoftdev.com — 06.62.54.14.86 / 07.76.07.77.94
 </footer>
 
 <script>
-
-// 🔗 رابط Google Drive (Apps Script)
-<!-- const ARTICLE_URL = -->
-<!-- "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec?action=article"; -->
-
-
-//ARTICLE_URL = "https://script.google.com/macros/s/AKfycbxP_4032GotENPZFkHz1ooJ1mD6gnwJxSn9riBeE_5z7i7qgI3OtAtFqsffMJt9m3IbaA/exec?action=article";
-
-
-ARTICLE_URL = "https://script.google.com/macros/s/AKfycbyFgZTvkdK2fQ2QOE7wgplpr-qCKdAgn9L8MaJ4jr7zGcHfnt6ekt-4rhjop853lNqa/exec?action=article";
-
-
-//const CREDIT_URL = API_URL + "?action=credit";
-
-
-//const ARTICLE_URL = "article.json";
-
+// 🔗 رابط Google Apps Script (Article JSON)
+const ARTICLE_URL =
+"https://script.google.com/macros/s/AKfycbyFgZTvkdK2fQ2QOE7wgplpr-qCKdAgn9L8MaJ4jr7zGcHfnt6ekt-4rhjop853lNqa/exec?action=article";
 
 let allItems = [];
 
-// 🔢 تنسيق الأرقام
 function format00(v){
   const n = Number(v);
   return isNaN(n) ? "0.00" : n.toLocaleString('fr-FR',{minimumFractionDigits:2});
 }
 
-// 🧱 رسم الجدول
 function renderTable(items){
   const tbody = document.querySelector("#articleTable tbody");
   tbody.innerHTML = "";
 
   items.forEach(a => {
-
-    const reference   = String(a.reference ?? "");
-    const designation = String(a.designation ?? "");
-    const achat       = Number(a.achat ?? 0);
-    const vente       = Number(a.vente ?? 0);
-    const qte         = Number(a.qte ?? 0);
-    const alerte      = Number(a.alerte ?? 0);
-
     const tr = document.createElement("tr");
 
-    if(qte <= 0){
-      tr.classList.add("out-stock");
-    }else if(qte <= alerte){
-      tr.classList.add("low-stock");
-    }
+    if(Number(a.qte) <= 0) tr.classList.add("out-stock");
+    else if(Number(a.qte) <= Number(a.alerte)) tr.classList.add("low-stock");
 
     tr.innerHTML = `
-      <td>${reference}</td>
-      <td style="text-align:right">${designation}</td>
-      <td>${format00(achat)}</td>
-      <td style="font-weight:800">${format00(vente)}</td>
-      <td>${qte}</td>
+      <td>${a.reference ?? ""}</td>
+      <td style="text-align:right">${a.designation ?? ""}</td>
+      <td>${format00(a.achat)}</td>
+      <td style="font-weight:800">${format00(a.vente)}</td>
+      <td>${a.qte ?? 0}</td>
     `;
-
     tbody.appendChild(tr);
   });
 }
 
-// 📥 تحميل البيانات
 fetch(ARTICLE_URL)
   .then(r => r.json())
   .then(data => {
-
     document.getElementById("loading").style.display = "none";
-
     allItems = Array.isArray(data.items) ? data.items : [];
-
     document.getElementById("nbArticles").innerText = allItems.length;
     document.getElementById("nbResults").innerText  = allItems.length;
-
     renderTable(allItems);
     document.getElementById("articleTable").style.display = "table";
   })
@@ -305,30 +261,17 @@ fetch(ARTICLE_URL)
     console.error(err);
   });
 
-// 🔍 البحث
 document.getElementById("searchInput").addEventListener("input", function(){
-
   const q = this.value.toLowerCase().trim();
-
-  const filtered = allItems.filter(a => {
-
-    const ref  = String(a.reference ?? "").toLowerCase();
-    const des  = String(a.designation ?? "").toLowerCase();
-    const vent = String(a.vente ?? "");
-
-    return (
-      ref.includes(q) ||
-      des.includes(q) ||
-      vent.includes(q)
-    );
-  });
-
+  const filtered = allItems.filter(a =>
+    String(a.reference ?? "").toLowerCase().includes(q) ||
+    String(a.designation ?? "").toLowerCase().includes(q) ||
+    String(a.vente ?? "").includes(q)
+  );
   renderTable(filtered);
   document.getElementById("nbResults").innerText = filtered.length;
 });
-
 </script>
-
 
 </body>
 </html>
