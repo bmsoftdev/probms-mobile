@@ -3,208 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة السلع 8888- ProBMS</title>
+    <title>قائمة السلع - ProBMS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0f0a1e;
-            --card-bg: #1a142e;
-            --accent: #8e44ad;
-            --text-main: #ffffff;
-            --text-dim: #b1b1b1;
+            --bg: #0f0a1e;
+            --card: #1a142e;
+            --purple: #8e44ad;
+            --text: #ffffff;
+            --gray: #b1b1b1;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 15px;
-            direction: rtl;
+            padding: 20px;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+        .container { max-width: 1000px; margin: 0 auto; }
 
-        .back-btn {
-            background: var(--accent);
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        /* الهيدر والإحصائيات */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: var(--card); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #332a50; }
+        .stat-val { font-size: 24px; font-weight: bold; color: var(--purple); }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+        /* صندوق البحث */
+        .search-container { position: relative; margin-bottom: 25px; }
+        .search-container input {
+            width: 100%; background: var(--card); border: 1px solid #332a50;
+            padding: 15px 45px 15px 15px; border-radius: 8px; color: white; font-size: 16px;
+            box-sizing: border-box; outline: none;
         }
+        .search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); }
 
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid #332a50;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
+        /* الجدول */
+        .table-wrapper { background: var(--card); border-radius: 10px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #332a50; }
+        th { background: #251d3a; color: var(--gray); font-size: 14px; }
+        tr:hover { background: #251d3a; }
+        .qte-badge { background: #2ecc71; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+        .qte-low { background: #e74c3c; }
 
-        .stat-val {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent);
-            margin-top: 5px;
-        }
-
-        .search-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            width: 100%;
-            background: var(--card-bg);
-            border: 1px solid #332a50;
-            padding: 12px 40px 12px 10px;
-            border-radius: 8px;
-            color: white;
-            box-sizing: border-box;
-        }
-
-        .search-box i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-dim);
-        }
-
-        #error-msg {
-            color: #ff4d4d;
-            text-align: center;
-            display: none;
-            padding: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #332a50;
-            font-size: 14px;
-        }
-
-        th { background: #251d3a; color: var(--text-dim); }
-
-        .footer {
-            text-align: center;
-            font-size: 11px;
-            color: #444;
-            margin-top: 30px;
-        }
+        #error-msg { color: #e74c3c; text-align: center; display: none; margin: 20px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <button class="back-btn"><i class="fas fa-arrow-right"></i> الرجوع</button>
-    <div style="font-size: 20px; font-weight: bold;">قائمة999السلع 📦</div>
-</div>
-
-<div class="stats-grid">
-    <div class="stat-card">
-        <div>نتائج البحث</div>
-        <div id="resCount" class="stat-val">0</div>
+<div class="container">
+    <div class="header">
+        <button style="background:var(--purple); color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">الرجوع</button>
+        <h2 style="margin:0;">قائمة السلع 📦</h2>
     </div>
-    <div class="stat-card">
-        <div>عدد السلع الكلي</div>
-        <div id="totalCount" class="stat-val">—</div>
+
+    <div class="stats">
+        <div class="stat-box">
+            <div style="color:var(--gray)">نتائج البحث</div>
+            <div id="resCount" class="stat-val">0</div>
+        </div>
+        <div class="stat-box">
+            <div style="color:var(--gray)">عدد السلع الكلي</div>
+            <div id="totalCount" class="stat-val">0</div>
+        </div>
     </div>
-</div>
 
-<div class="search-box">
-    <i class="fas fa-search"></i>
-    <input type="text" id="searchInput" placeholder="بحث بالمرجع أو التعيين...">
-</div>
+    <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="ابحث بالمرجع أو اسم السلعة...">
+    </div>
 
-<div id="error-msg"><i class="fas fa-exclamation-triangle"></i> خطأ في تحميل ملف السلع</div>
+    <div id="error-msg">❌ خطأ في تحميل البيانات، تأكد من إعدادات النشر في جوجل.</div>
 
-<table id="articleTable">
-    <thead>
-        <tr>
-            <th>المرجع</th>
-            <th>التعيين</th>
-            <th>السعر</th>
-            <th>الكمية</th>
-        </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-</div>
-
-<div class="footer">
-    ProBMS © www.bmsoftdev.com — 06.62.54.14.86
+    <div class="table-wrapper">
+        <table id="articleTable">
+            <thead>
+                <tr>
+                    <th>المرجع</th>
+                    <th>التعيين</th>
+                    <th>سعر البيع</th>
+                    <th>الكمية</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    //const API_URL = "https://script.google.com/macros/s/AKfycbyFgZTvkdK2fQ2QOE7wgplpr-qCKdAgn9L8MaJ4jr7zGcHfnt6ekt-4rhjop853lNqa/exec?action=article";
-	const API_URL = https://script.google.com/macros/s/AKfycbyXizmCXLYqAW8ipYi2z77t-LTHuCKNRX8Emh-1KMuIDIWk37ajxZD0H5KUjDx6Fhdx/exec?action=article
-	
+    // الرابط الجديد الذي يعمل بشكل صحيح
+    const API_URL = "https://script.google.com/macros/s/AKfycbyXizmCXLYqAW8ipYi2z77t-LTHuCKNRX8Emh-1KMuIDIWk37ajxZD0H5KUjDx6Fhdx/exec?action=article";
+    
     let articles = [];
 
     async function loadData() {
         try {
-            // استخدام fetch مع التعامل مع التحويلات التلقائية لجوجل
             const response = await fetch(API_URL);
-            if (!response.ok) throw new Error();
-            
             const data = await response.json();
-            articles = data.items || [];
             
+            // استخراج البيانات بناءً على هيكلة ملفك JSON
+            articles = data.items || [];
             document.getElementById('totalCount').innerText = data.articles || articles.length;
-            updateTable(articles);
+            
+            displayArticles(articles);
             document.getElementById('error-msg').style.display = 'none';
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
+            console.error("Error:", error);
             document.getElementById('error-msg').style.display = 'block';
         }
     }
 
-    function updateTable(data) {
+    function displayArticles(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
+
         data.forEach(item => {
-            tbody.innerHTML += `<tr>
-                <td>${item.reference}</td>
+            const row = `<tr>
+                <td style="color:var(--purple); font-weight:bold;">${item.reference}</td>
                 <td>${item.designation}</td>
-                <td>${item.vente}</td>
-                <td>${item.qte}</td>
+                <td>${item.vente.toLocaleString()} د.ج</td>
+                <td><span class="qte-badge ${item.qte <= 0 ? 'qte-low' : ''}">${item.qte}</span></td>
             </tr>`;
+            tbody.innerHTML += row;
         });
         document.getElementById('resCount').innerText = data.length;
     }
 
+    // تفعيل البحث
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         const filtered = articles.filter(a => 
             a.reference.toLowerCase().includes(term) || 
             a.designation.toLowerCase().includes(term)
         );
-        updateTable(filtered);
+        displayArticles(filtered);
     });
 
-    window.onload = loadData;
+    // بدء التحميل
+    loadData();
 </script>
 </body>
 </html>
