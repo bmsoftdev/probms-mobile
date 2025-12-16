@@ -1,280 +1,176 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<title>قائمة السلع</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+import React, { useState, useEffect } from 'react';
+import { Search, Package, RefreshCw, Loader2 } from 'lucide-react';
 
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+const ARTICLE_URL = "https://script.google.com/macros/s/AKfycbyFgZTvkdK2fQ2QOE7wgplpr-qCKdAgn9L8MaJ4jr7zGcHfnt6ekt-4rhjop853lNqa/exec?action=article";
 
-<style>
-:root{
-  --bg1:#070517;
-  --bg2:#120a2a;
-  --card:#0e0a1f;
-  --stroke:rgba(255,255,255,.08);
-  --text:#f1f5f9;
-  --muted:rgba(241,245,249,.7);
-  --mauve:#b55cff;
-  --mauve2:#7c3aed;
-  --good:#22c55e;
-  --warn:#f97316;
-  --bad:#ef4444;
-  --shadow:0 25px 60px rgba(0,0,0,.55);
-}
+export default function ProductListApp() {
+  const [data, setData] = useState({ items: [], articles: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-*{box-sizing:border-box}
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-body{
-  margin:0;
-  font-family:'Cairo',Tahoma;
-  background:
-    radial-gradient(900px 500px at 15% 10%, rgba(181,92,255,.25), transparent 60%),
-    linear-gradient(135deg,var(--bg1),var(--bg2));
-  color:var(--text);
-  min-height:100vh;
-}
+  const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(ARTICLE_URL);
+      
+      if (!response.ok) {
+        throw new Error('فشل تحميل البيانات');
+      }
+      
+      const result = await response.json();
+      console.log('Données reçues:', result);
+      
+      setData({
+        items: result.items || [],
+        articles: result.articles || 0
+      });
+      
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError('خطأ في تحميل ملف السلع');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-.container{
-  max-width:1200px;
-  margin:30px auto;
-  padding:20px;
-}
-
-.header{
-  background:linear-gradient(135deg, rgba(181,92,255,.18), rgba(14,10,31,.7));
-  border:1px solid var(--stroke);
-  border-radius:18px;
-  padding:18px;
-  box-shadow:var(--shadow);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.header h1{
-  margin:0;
-  font-size:22px;
-  font-weight:800;
-}
-
-.back{
-  background:linear-gradient(135deg,var(--mauve),var(--mauve2));
-  border:none;
-  color:white;
-  padding:10px 16px;
-  border-radius:14px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.stats{
-  margin-top:20px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px;
-}
-
-.stat{
-  background:rgba(14,10,31,.7);
-  border:1px solid var(--stroke);
-  border-radius:16px;
-  padding:16px;
-  box-shadow:var(--shadow);
-  text-align:center;
-}
-
-.stat span{
-  display:block;
-  font-size:13px;
-  color:var(--muted);
-}
-
-.stat strong{
-  font-size:22px;
-  font-weight:900;
-  color:var(--mauve);
-}
-
-.search{
-  margin-top:20px;
-}
-
-.search input{
-  width:100%;
-  padding:14px 16px;
-  border-radius:16px;
-  border:1px solid var(--stroke);
-  background:rgba(255,255,255,.05);
-  color:white;
-  font-family:'Cairo';
-  font-size:15px;
-}
-
-.table-card{
-  margin-top:20px;
-  background:rgba(14,10,31,.7);
-  border:1px solid var(--stroke);
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-}
-
-th,td{
-  padding:12px;
-  border-bottom:1px solid #1f2937;
-  text-align:center;
-}
-
-th{
-  background:#020617;
-  font-weight:800;
-}
-
-tr:hover{
-  background:rgba(181,92,255,.08);
-}
-
-.low-stock{ background:rgba(249,115,22,.18); }
-.out-stock{ background:rgba(239,68,68,.25); font-weight:800; }
-
-.loading,.error{
-  text-align:center;
-  padding:30px;
-  font-size:16px;
-}
-
-.error{color:#f87171}
-
-footer{
-  margin-top:25px;
-  text-align:center;
-  font-size:12px;
-  opacity:.6;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-  <div class="header">
-    <h1>📦 قائمة السلع</h1>
-    <button class="back" onclick="location.href='index.html'">⬅ الرجوع</button>
-  </div>
-
-  <div class="stats">
-    <div class="stat">
-      <span>عدد السلع الكلي</span>
-      <strong id="nbArticles">—</strong>
-    </div>
-    <div class="stat">
-      <span>نتائج البحث</span>
-      <strong id="nbResults">0</strong>
-    </div>
-  </div>
-
-  <div class="search">
-    <input type="text" id="searchInput" placeholder="🔍 بحث بالمرجع أو التعيين أو سعر البيع...">
-  </div>
-
-  <div id="loading" class="loading">⏳ تحميل السلع...</div>
-  <div id="error" class="error" style="display:none"></div>
-
-  <div class="table-card">
-    <table id="articleTable" style="display:none">
-      <thead>
-        <tr>
-          <th>المرجع</th>
-          <th style="text-align:right">التعيين</th>
-          <th>سعر الشراء</th>
-          <th>سعر البيع</th>
-          <th>الكمية</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-</div>
-
-<footer>
-ProBMS © www.bmsoftdev.com — 06.62.54.14.86 / 07.76.07.77.94
-</footer>
-
-<script>
-// 🔗 رابط Google Apps Script (Article JSON)
-const ARTICLE_URL =
-"https://script.google.com/macros/s/AKfycbyFgZTvkdK2fQ2QOE7wgplpr-qCKdAgn9L8MaJ4jr7zGcHfnt6ekt-4rhjop853lNqa/exec?action=article";
-
-
-
-
-let allItems = [];
-
-function format00(v){
-  const n = Number(v);
-  return isNaN(n) ? "0.00" : n.toLocaleString('fr-FR',{minimumFractionDigits:2});
-}
-
-function renderTable(items){
-  const tbody = document.querySelector("#articleTable tbody");
-  tbody.innerHTML = "";
-
-  items.forEach(a => {
-    const tr = document.createElement("tr");
-
-    if(Number(a.qte) <= 0) tr.classList.add("out-stock");
-    else if(Number(a.qte) <= Number(a.alerte)) tr.classList.add("low-stock");
-
-    tr.innerHTML = `
-      <td>${a.reference ?? ""}</td>
-      <td style="text-align:right">${a.designation ?? ""}</td>
-      <td>${format00(a.achat)}</td>
-      <td style="font-weight:800">${format00(a.vente)}</td>
-      <td>${a.qte ?? 0}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-fetch(ARTICLE_URL)
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById("loading").style.display = "none";
-    allItems = Array.isArray(data.items) ? data.items : [];
-    document.getElementById("nbArticles").innerText = allItems.length;
-    document.getElementById("nbResults").innerText  = allItems.length;
-    renderTable(allItems);
-    document.getElementById("articleTable").style.display = "table";
-  })
-  .catch(err => {
-    document.getElementById("loading").style.display="none";
-    document.getElementById("error").style.display="block";
-    document.getElementById("error").innerText="❌ خطأ في تحميل ملف السلع";
-    console.error(err);
+  const filteredProducts = data.items.filter(item => {
+    if (!searchTerm) return true;
+    const search = searchTerm.toLowerCase();
+    return (
+      (item.reference && item.reference.toLowerCase().includes(search)) ||
+      (item.designation && item.designation.toLowerCase().includes(search))
+    );
   });
 
-document.getElementById("searchInput").addEventListener("input", function(){
-  const q = this.value.toLowerCase().trim();
-  const filtered = allItems.filter(a =>
-    String(a.reference ?? "").toLowerCase().includes(q) ||
-    String(a.designation ?? "").toLowerCase().includes(q) ||
-    String(a.vente ?? "").includes(q)
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-16 h-16 text-purple-400 animate-spin mx-auto mb-4" />
+          <p className="text-white text-xl">جاري تحميل البيانات...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950 p-6">
+      <div className="max-w-6xl mx-auto">
+        
+        <div className="flex justify-between items-center mb-6">
+          <button
+            onClick={fetchProducts}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-xl transition flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            تحديث
+          </button>
+          
+          <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+            📦 قائمة السلع
+          </h1>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20">
+            <p className="text-purple-300 text-sm mb-2">عدد السلع الكلي</p>
+            <p className="text-4xl font-bold text-white">{data.articles}</p>
+          </div>
+          
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20">
+            <p className="text-purple-300 text-sm mb-2">نتائج البحث</p>
+            <p className="text-4xl font-bold text-purple-400">{filteredProducts.length}</p>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="ابحث بالمرجع أو التسمية أو سعر السلع..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white/5 backdrop-blur-xl border border-purple-500/30 rounded-2xl py-4 pr-12 pl-4 text-white placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 rounded-2xl p-4 mb-6 text-center">
+            <p className="text-red-300">{error}</p>
+          </div>
+        )}
+
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-20 bg-white/5 backdrop-blur-xl rounded-2xl border border-purple-500/20">
+            <Package className="w-24 h-24 text-purple-500/30 mx-auto mb-4" />
+            <p className="text-purple-300 text-xl">لا توجد سلع مطابقة للبحث</p>
+          </div>
+        ) : (
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-purple-500/20 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-purple-900/30 border-b border-purple-500/30">
+                    <th className="text-right p-4 text-purple-200 font-semibold whitespace-nowrap">المرجع</th>
+                    <th className="text-right p-4 text-purple-200 font-semibold whitespace-nowrap">التسمية</th>
+                    <th className="text-center p-4 text-purple-200 font-semibold whitespace-nowrap">سعر الشراء</th>
+                    <th className="text-center p-4 text-purple-200 font-semibold whitespace-nowrap">سعر البيع</th>
+                    <th className="text-center p-4 text-purple-200 font-semibold whitespace-nowrap">الكمية</th>
+                    <th className="text-center p-4 text-purple-200 font-semibold whitespace-nowrap">تنبيه</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((item, idx) => (
+                    <tr 
+                      key={idx}
+                      className="border-b border-purple-500/10 hover:bg-purple-900/20 transition"
+                    >
+                      <td className="p-4 text-purple-200 font-mono text-sm whitespace-nowrap">
+                        {item.reference || '—'}
+                      </td>
+                      <td className="p-4 text-white">
+                        {item.designation || '—'}
+                      </td>
+                      <td className="p-4 text-center text-cyan-400 font-semibold whitespace-nowrap">
+                        {item.achat != null ? item.achat.toFixed(2) : '—'}
+                      </td>
+                      <td className="p-4 text-center text-green-400 font-bold whitespace-nowrap">
+                        {item.vente != null ? item.vente.toFixed(2) : '—'}
+                      </td>
+                      <td className="p-4 text-center whitespace-nowrap">
+                        <span className={`font-bold ${
+                          item.qte > 10 ? 'text-green-400' : 
+                          item.qte > 0 ? 'text-yellow-400' : 'text-red-400'
+                        }`}>
+                          {item.qte != null ? item.qte : '—'}
+                        </span>
+                      </td>
+                      <td className="p-4 text-center text-orange-400 font-semibold whitespace-nowrap">
+                        {item.alerte != null ? item.alerte : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-8 text-center">
+          <p className="text-purple-400 text-sm">
+            ProBMS © www.bmsoftdev.com — 05.62.54.14.86 / 07.76.07.77.94
+          </p>
+        </div>
+      </div>
+    </div>
   );
-  renderTable(filtered);
-  document.getElementById("nbResults").innerText = filtered.length;
-});
-</script>
-
-</body>
-</html>
+}
