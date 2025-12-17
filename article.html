@@ -1,166 +1,279 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة السلع - ProBMS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --bg: #0f0a1e;
-            --card: #1a142e;
-            --purple: #8e44ad;
-            --text: #ffffff;
-            --gray: #b1b1b1;
-        }
+<meta charset="UTF-8">
+<title>قائمة السلع</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-        .container { max-width: 1000px; margin: 0 auto; }
+<style>
+:root{
+  --bg1:#070517;
+  --bg2:#120a2a;
+  --card:#0e0a1f;
+  --stroke:rgba(255,255,255,.08);
+  --text:#f1f5f9;
+  --muted:rgba(241,245,249,.7);
+  --mauve:#b55cff;
+  --mauve2:#7c3aed;
+  --good:#22c55e;
+  --warn:#f97316;
+  --bad:#ef4444;
+  --shadow:0 25px 60px rgba(0,0,0,.55);
+}
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: var(--card); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #332a50; }
-        .stat-val { font-size: 24px; font-weight: bold; color: var(--purple); }
+*{box-sizing:border-box}
 
-        .search-container { position: relative; margin-bottom: 25px; }
-        .search-container input {
-            width: 100%; background: var(--card); border: 1px solid #332a50;
-            padding: 15px 45px 15px 15px; border-radius: 8px; color: white; font-size: 16px;
-            box-sizing: border-box; outline: none;
-        }
-        .search-container i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); }
+body{
+  margin:0;
+  font-family:'Cairo',Tahoma;
+  background:
+    radial-gradient(900px 500px at 15% 10%, rgba(181,92,255,.25), transparent 60%),
+    linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--text);
+  min-height:100vh;
+}
 
-        .table-wrapper { background: var(--card); border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #332a50; }
-        th { background: #251d3a; color: var(--gray); font-size: 14px; }
-        tr:hover { background: #251d3a; }
-        .qte-badge { background: #2ecc71; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; display: inline-block; min-width: 30px; text-align: center; }
-        .qte-low { background: #e74c3c; }
+.container{
+  max-width:1200px;
+  margin:30px auto;
+  padding:20px;
+}
 
-        #error-msg { color: #e74c3c; text-align: center; display: none; margin: 20px; padding: 10px; background: rgba(231, 76, 60, 0.1); border-radius: 5px; }
-        .loading { text-align: center; padding: 20px; color: var(--purple); }
-    </style>
+.header{
+  background:linear-gradient(135deg, rgba(181,92,255,.18), rgba(14,10,31,.7));
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.header h1{
+  margin:0;
+  font-size:22px;
+  font-weight:800;
+}
+
+.back{
+  background:linear-gradient(135deg,var(--mauve),var(--mauve2));
+  border:none;
+  color:white;
+  padding:10px 16px;
+  border-radius:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.stats{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+
+.stat{
+  background:rgba(14,10,31,.7);
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  text-align:center;
+}
+
+.stat span{
+  display:block;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.stat strong{
+  font-size:22px;
+  font-weight:900;
+  color:var(--mauve);
+}
+
+.search{
+  margin-top:20px;
+}
+
+.search input{
+  width:100%;
+  padding:14px 16px;
+  border-radius:16px;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.05);
+  color:white;
+  font-family:'Cairo';
+  font-size:15px;
+}
+
+.table-card{
+  margin-top:20px;
+  background:rgba(14,10,31,.7);
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid #1f2937;
+  text-align:center;
+}
+
+th{
+  background:#020617;
+  font-weight:800;
+}
+
+tr:hover{
+  background:rgba(181,92,255,.08);
+}
+
+.low-stock{ background:rgba(249,115,22,.18); }
+.out-stock{ background:rgba(239,68,68,.25); font-weight:800; }
+
+.loading,.error{
+  text-align:center;
+  padding:30px;
+  font-size:16px;
+}
+
+.error{color:#f87171}
+
+footer{
+  margin-top:25px;
+  text-align:center;
+  font-size:12px;
+  opacity:.6;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <div class="header">
-        <button onclick="window.history.back()" style="background:var(--purple); color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">الرجوع</button>
-        <h2 style="margin:0;">قائمة السلع 📦</h2>
-    </div>
 
-    <div class="stats">
-        <div class="stat-box">
-            <div style="color:var(--gray)">نتائج البحث</div>
-            <div id="resCount" class="stat-val">0</div>
-        </div>
-        <div class="stat-box">
-            <div style="color:var(--gray)">إجمالي السلع</div>
-            <div id="totalCount" class="stat-val">0</div>
-        </div>
-    </div>
+  <div class="header">
+    <h1>📦 قائمة السلع</h1>
+    <button class="back" onclick="location.href='index.html'">⬅ الرجوع</button>
+  </div>
 
-    <div class="search-container">
-        <i class="fas fa-search"></i>
-        <input type="text" id="searchInput" placeholder="ابحث بالمرجع أو اسم السلعة...">
+  <div class="stats">
+    <div class="stat">
+      <span>عدد السلع الكلي</span>
+      <strong id="nbArticles">—</strong>
     </div>
-
-    <div id="error-msg">❌ خطأ في تحميل البيانات. تأكد من اتصالك بالإنترنت ومن نشر API بشكل صحيح.</div>
-    <div id="loading" class="loading">جاري جلب البيانات...</div>
-
-    <div class="table-wrapper">
-        <table id="articleTable">
-            <thead>
-                <tr>
-                    <th>المرجع</th>
-                    <th>التعيين</th>
-                    <th>سعر البيع</th>
-                    <th>الكمية</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+    <div class="stat">
+      <span>نتائج البحث</span>
+      <strong id="nbResults">0</strong>
     </div>
+  </div>
+
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="🔍 بحث بالمرجع أو التعيين أو سعر البيع...">
+  </div>
+
+  <div id="loading" class="loading">⏳ تحميل السلع...</div>
+  <div id="error" class="error" style="display:none"></div>
+
+  <div class="table-card">
+    <table id="articleTable" style="display:none">
+      <thead>
+        <tr>
+          <th>المرجع</th>
+          <th style="text-align:right">التعيين</th>
+          <th>سعر الشراء</th>
+          <th>سعر البيع</th>
+          <th>الكمية</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
 </div>
 
+<footer>
+ProBMS © www.bmsoftdev.com — 06.62.54.14.86 / 07.76.07.77.94
+</footer>
+
 <script>
-    // الرابط الخاص بك
-  	  const API_URL = "https://script.google.com/macros/s/AKfycbz9SH3PO3YVYHOdorAIKMzYlAt1Ig9H4PvEYzpG0cA6hX9yWhbiODTKqIyJfHEy1zw9/exec?action=article";
+// 🔗 رابط Google Apps Script (Article JSON)
+
+
+  const ARTICLE_URL = "https://script.google.com/macros/s/AKfycbz9SH3PO3YVYHOdorAIKMzYlAt1Ig9H4PvEYzpG0cA6hX9yWhbiODTKqIyJfHEy1zw9/exec?action=article";
     
-    let articles = [];
 
-    async function loadData() {
-        const loadingEl = document.getElementById('loading');
-        const errorEl = document.getElementById('error-msg');
-        
-        try {
-            const response = await fetch(API_URL);
-            if (!response.ok) throw new Error('Network response was not ok');
-            
-            const data = await response.json();
-            
-            // التأكد من جلب المصفوفة الصحيحة (حسب هيكلة ملف JSON الخاص بك)
-            // إذا كان الملف يحتوي على مفتاح باسم articles كـ array:
-            articles = data.articles || data.items || (Array.isArray(data) ? data : []);
-            
-            document.getElementById('totalCount').innerText = articles.length;
-            
-            displayArticles(articles);
-            loadingEl.style.display = 'none';
-        } catch (error) {
-            console.error("Error:", error);
-            loadingEl.style.display = 'none';
-            errorEl.style.display = 'block';
-            errorEl.innerText = "❌ فشل الاتصال بالخادم: " + error.message;
-        }
-    }
 
-    function displayArticles(data) {
-        const tbody = document.getElementById('tableBody');
-        
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">لا توجد نتائج مطابقة</td></tr>';
-            document.getElementById('resCount').innerText = 0;
-            return;
-        }
+let allItems = [];
 
-        // استخدام map لتحسين الأداء
-        tbody.innerHTML = data.map(item => `
-            <tr>
-                <td style="color:var(--purple); font-weight:bold;">${item.reference || 'N/A'}</td>
-                <td>${item.designation || 'بدون اسم'}</td>
-                <td>${Number(item.vente || 0).toLocaleString()} د.ج</td>
-                <td>
-                    <span class="qte-badge ${Number(item.qte) <= 5 ? 'qte-low' : ''}">
-                        ${item.qte || 0}
-                    </span>
-                </td>
-            </tr>
-        `).join('');
+function format00(v){
+  const n = Number(v);
+  return isNaN(n) ? "0.00" : n.toLocaleString('fr-FR',{minimumFractionDigits:2});
+}
 
-        document.getElementById('resCount').innerText = data.length;
-    }
+function renderTable(items){
+  const tbody = document.querySelector("#articleTable tbody");
+  tbody.innerHTML = "";
 
-    // تفعيل البحث الذكي
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase().trim();
-        const filtered = articles.filter(a => 
-            (a.reference && a.reference.toLowerCase().includes(term)) || 
-            (a.designation && a.designation.toLowerCase().includes(term))
-        );
-        displayArticles(filtered);
-    });
+  items.forEach(a => {
+    const tr = document.createElement("tr");
 
-    // بدء التحميل عند فتح الصفحة
-    loadData();
+    if(Number(a.qte) <= 0) tr.classList.add("out-stock");
+    else if(Number(a.qte) <= Number(a.alerte)) tr.classList.add("low-stock");
+
+    tr.innerHTML = `
+      <td>${a.reference ?? ""}</td>
+      <td style="text-align:right">${a.designation ?? ""}</td>
+      <td>${format00(a.achat)}</td>
+      <td style="font-weight:800">${format00(a.vente)}</td>
+      <td>${a.qte ?? 0}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+fetch(ARTICLE_URL)
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("loading").style.display = "none";
+    allItems = Array.isArray(data.items) ? data.items : [];
+    document.getElementById("nbArticles").innerText = allItems.length;
+    document.getElementById("nbResults").innerText  = allItems.length;
+    renderTable(allItems);
+    document.getElementById("articleTable").style.display = "table";
+  })
+  .catch(err => {
+    document.getElementById("loading").style.display="none";
+    document.getElementById("error").style.display="block";
+    document.getElementById("error").innerText="❌ خطأ في تحميل ملف السلع";
+    console.error(err);
+  });
+
+document.getElementById("searchInput").addEventListener("input", function(){
+  const q = this.value.toLowerCase().trim();
+  const filtered = allItems.filter(a =>
+    String(a.reference ?? "").toLowerCase().includes(q) ||
+    String(a.designation ?? "").toLowerCase().includes(q) ||
+    String(a.vente ?? "").includes(q)
+  );
+  renderTable(filtered);
+  document.getElementById("nbResults").innerText = filtered.length;
+});
 </script>
 
 </body>
